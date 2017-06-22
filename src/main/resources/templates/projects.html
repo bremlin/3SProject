@@ -25,8 +25,8 @@
                 <td th:text="${project.projectDbName}">Project DB Name</td>
                 <td th:each="role : ${project.roles}"><span th:text="${role}"></span></td>
                 <td><a th:href="${'/project/' + project.id}">View</a> </td>
-                <td sec:authorize="hasAuthority('ADMIN')"><a th:href="${'/user/edit/' + project.id}">Edit</a> </td>
-                <td sec:authorize="hasAuthority('ADMIN')"><a th:href="${'/user/delete/' + project.id}">Delete</a> </td>
+                <td sec:authorize="hasAuthority('ADMIN')"><a th:href="${'/project/edit/' + project.id}">Edit</a> </td>
+                <td sec:authorize="hasAuthority('ADMIN')"><a th:href="${'/project/delete/' + project.id}">Delete</a> </td>
             </tr>
         </table>
 

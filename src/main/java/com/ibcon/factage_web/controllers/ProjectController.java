@@ -43,7 +43,7 @@ public class ProjectController {
 
     @RequestMapping("project/edit/{id}")
     public String edit(@PathVariable Integer id, Model model) {
-        model.addAttribute("user", projectService.getById(id));
+        model.addAttribute("project", projectService.getById(id));
         return "projectform";
     }
 

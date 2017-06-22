@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="ru">
+    <title>Форма проекта</title>
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+</head>
+<body>
+<div class="container">
+    <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+
+    <h2>Project Details</h2>
+    <div>
+        <form class="form-horizontal" th:object="${project}" th:action="@{/project}" method="post">
+            <input type="hidden" th:field="*{id}"/>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Project Object Id:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" th:field="*{projectObjectId}" autofocus="true"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Primavera Id:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" th:field="*{primaveraId}"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Project Name:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" th:field="*{projectName}"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Project DB Name:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" th:field="*{projectDbName}"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Project Wbs Id:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" th:field="*{projectWbsId}"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Project Code:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" th:field="*{projectCode}"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Config Id:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" th:field="*{configId}"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Index Number:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" th:field="*{indexNumber}"/>
+                </div>
+            </div>
+            <!--TODO div with roles-->
+            <div class="row">
+                <button type="submit" class="btn btn-default">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
