@@ -23,13 +23,4 @@ public class UserFormModelCreatorImpl extends AbstractUserFormCreator {
     private void fillRoleIds() {
         user.getRoles().forEach(role -> roleIds.add(role.getId()));
     }
-
-    public User createUser(RoleService roleService, UserServiceCrud userServiceCrud) {
-        User user = super.createUser(roleService);
-        if (user.getId() != null) {
-            String encryptedPassword = userServiceCrud.getById(user.getId()).getEncryptedPassword();
-            user.setEncryptedPassword(encryptedPassword);
-        }
-        return user;
-    }
 }

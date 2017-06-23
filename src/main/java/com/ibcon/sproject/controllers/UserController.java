@@ -1,6 +1,7 @@
 package com.ibcon.sproject.controllers;
 
 import com.ibcon.sproject.creators.user.EmptyUserFormCreatorImpl;
+import com.ibcon.sproject.creators.user.UserFormModelCreator;
 import com.ibcon.sproject.creators.user.UserFormModelCreatorImpl;
 import com.ibcon.sproject.domain.Role;
 import com.ibcon.sproject.domain.User;
@@ -45,10 +46,9 @@ public class UserController {
     }
 
     @RequestMapping(value = "user", method = RequestMethod.POST)
-    public String save(@ModelAttribute("createUserFormModel") UserFormModelCreatorImpl userFormModelCreatorImpl) {
-        User user = userFormModelCreatorImpl.createUser(roleService, userServiceCrud);
-        userServiceCrud.saveOrUpdate(user);
-        return "redirect:/user/" + user.getId();
+    public String save(@ModelAttribute("createUserFormModel") UserFormModelCreatorImpl userFormModelCreator) {
+        userServiceCrud.saveOrUpdate(userFormModelCreator);
+        return "redirect:/user/" + userFormModelCreator.getUser().getId();
     }
 
     @RequestMapping("user/{id}")

@@ -1,7 +1,10 @@
 package com.ibcon.sproject.services.crud.user;
 
+import com.ibcon.sproject.creators.user.UserFormModelCreator;
 import com.ibcon.sproject.domain.User;
+import com.ibcon.sproject.repositories.RoleRepository;
 import com.ibcon.sproject.repositories.UserRepository;
+import com.ibcon.sproject.services.crud.role.RoleService;
 import com.ibcon.sproject.services.encryption.EncryptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -15,10 +18,23 @@ import java.util.List;
 @Profile("springdatajpa")
 public class UserServiceCrudImp implements UserServiceCrud {
     private UserRepository userRepository;
+    private RoleRepository roleRepository;
+
+    private RoleService roleService;
 
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    @Autowired
+    public void setRoleRepository(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
+
+    @Autowired
+    public void setRoleService(RoleService roleService) {
+        this.roleService = roleService;
     }
 
     private EncryptionService encryptionService;
@@ -48,6 +64,17 @@ public class UserServiceCrudImp implements UserServiceCrud {
         }
         return userRepository.save(domainObject);
     }
+
+    public User saveOrUpdate(UserFormModelCreator userFormModelCreator) {
+        User newUser = userFormModelCreator.createUser(roleService);
+        if (newUser.getId() != null) {
+            User oldUser = getById(newUser.getId());
+            newUser.setEncryptedPassword(oldUser.getEncryptedPassword());
+        }
+
+        return saveOrUpdate(newUser);
+    }
+
     @Override
     @Transactional
     public void delete(Integer id) {

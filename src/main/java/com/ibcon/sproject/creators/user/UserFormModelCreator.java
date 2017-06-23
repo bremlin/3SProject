@@ -5,4 +5,5 @@ import com.ibcon.sproject.services.crud.role.RoleService;
 
 public interface UserFormModelCreator {
     User createUser(RoleService roleService);
+    User getUser();
 }
