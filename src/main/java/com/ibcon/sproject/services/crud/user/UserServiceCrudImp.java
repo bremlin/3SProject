@@ -18,18 +18,12 @@ import java.util.List;
 @Profile("springdatajpa")
 public class UserServiceCrudImp implements UserServiceCrud {
     private UserRepository userRepository;
-    private RoleRepository roleRepository;
 
     private RoleService roleService;
 
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
-    }
-
-    @Autowired
-    public void setRoleRepository(RoleRepository roleRepository) {
-        this.roleRepository = roleRepository;
     }
 
     @Autowired

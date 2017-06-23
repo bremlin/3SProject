@@ -1,6 +1,5 @@
 package com.ibcon.sproject.domain;
 
-import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.format.annotation.DateTimeFormat;
 
