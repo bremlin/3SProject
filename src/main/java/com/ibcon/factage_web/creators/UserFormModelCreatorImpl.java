@@ -5,6 +5,7 @@ import com.ibcon.factage_web.domain.User;
 import com.ibcon.factage_web.services.crud.role.RoleService;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class UserFormModelCreatorImpl implements UserFormModelCreator {
@@ -21,10 +22,15 @@ public class UserFormModelCreatorImpl implements UserFormModelCreator {
 
     @Override
     public User createUser(RoleService roleService) {
+        user.setRoles(new HashSet<>());
         for (Integer roleId : roleIds) {
             user.addRole(roleService.getById(roleId));
         }
         return user;
+    }
+
+    public void fillRoleIds() {
+        user.getRoles().forEach(role -> roleIds.add(role.getId()));
     }
 
     public User getUser() {
@@ -33,6 +39,7 @@ public class UserFormModelCreatorImpl implements UserFormModelCreator {
 
     public void setUser(User user) {
         this.user = user;
+        fillRoleIds();
     }
 
     public List<Role> getAllRoles() {
@@ -41,6 +48,7 @@ public class UserFormModelCreatorImpl implements UserFormModelCreator {
 
     public void setAllRoles(List<Role> allRoles) {
         this.allRoles = allRoles;
+//        allRoles.forEach();
     }
 
     public List<Integer> getRoleIds() {

@@ -1,6 +1,7 @@
 package com.ibcon.factage_web.controllers;
 
 import com.ibcon.factage_web.creators.UserFormModelCreatorImpl;
+import com.ibcon.factage_web.domain.Role;
 import com.ibcon.factage_web.domain.User;
 import com.ibcon.factage_web.services.crud.role.RoleService;
 import com.ibcon.factage_web.services.crud.user.UserServiceCrud;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @Controller
 public class UserController {
@@ -63,7 +65,11 @@ public class UserController {
 
     @RequestMapping("user/edit/{id}")
     public String edit(@PathVariable Integer id, Model model) {
-        model.addAttribute("user", userServiceCrud.getById(id));
+        UserFormModelCreatorImpl userFormModelCreator = new UserFormModelCreatorImpl();
+        userFormModelCreator.setUser(userServiceCrud.getById(id));
+        userFormModelCreator.setAllRoles((List<Role>) roleService.listAll());
+        userFormModelCreator.getUser().setExpirationDate(new Date());
+        model.addAttribute("createUserFormModel", userFormModelCreator);
         return "userform";
     }
 
