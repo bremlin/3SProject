@@ -15,6 +15,7 @@
                                 <li><a th:href="@{/login}" sec:authorize="not isAuthenticated()">Log in</a></li>
                                 <li><a th:href="@{/projects}" sec:authorize="isAuthenticated()">Проекты</a></li>
                                 <li><a href="#" th:href="@{/users}" sec:authorize="hasAuthority('ADMIN')">Пользователи</a></li>
+                                <li><a href="#" th:href="@{/project/new}" sec:authorize="hasAuthority('ADMIN')">Создать проект</a></li>
                                 <li><a href="#" th:href="@{/user/new}" sec:authorize="hasAuthority('ADMIN')">Создать пользователя</a></li>
                             </ul>
 
