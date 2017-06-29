@@ -11,6 +11,7 @@ import java.util.Set;
 @Entity
 @Table(name = "projects")
 public @Data class Project extends AbstractDomainClass {
+//    private Integer id;
     private Integer projectObjectId;
     private String primaveraId;
     private String projectName;
@@ -24,6 +25,9 @@ public @Data class Project extends AbstractDomainClass {
     @JoinTable(name = "projects_roles", joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "project")
+    private Set<WBS> wbsSet = new HashSet<>();
 
     public void addRole(Role role) {
         if (!this.getRoles().contains(role)) {

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head  lang="ru">
+    <title>Проект</title>
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+</head>
+<body>
+<div class="container">
+    <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+    <div th:each="wbs : ${wbsList}">
+        <p th:text="${wbs.id}"></p>
+        <p>---</p>
+        <p th:each="activity : ${wbs.activities}" th:text="${activity.id}"></p>
+        <p>---</p>
+    </div>
+
+</div>
+</body>
+</html>
