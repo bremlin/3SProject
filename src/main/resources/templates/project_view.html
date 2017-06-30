@@ -12,18 +12,12 @@
 <body>
 <div class="container">
     <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
-    <div th:each="wbs : ${wbsList}">
-        <p th:text="${wbs.id}"></p>
-        <p>---</p>
-        <p th:each="activity : ${wbs.activities}" th:text="${activity.id}"></p>
-        <p>---</p>
-    </div>
-
     <table id="example" class="display select" cellspacing="0" width="100%">
         <thead>
         <tr>
             <th><input name="select_all" value="1" type="checkbox"/></th>
             <th class="hidden">WBS Name</th>
+            <th class="hidden">WBS Code</th>
             <th>Id</th>
             <th>Name</th>
             <!--duration and dates-->
@@ -36,6 +30,7 @@
             <tr th:each="activity : ${wbs.activities}">
                 <td><input type="checkbox"/></td>
                 <td class="hidden" th:text="${wbs.name}"></td>
+                <td class="hidden" th:text="${wbs.code}"></td>
                 <td th:text="${activity.id}"></td>
                 <td th:text="${activity.activityName}"></td>
                 <td th:text="${activity.typeId}"></td>
@@ -304,13 +299,49 @@
                     var last = null;
 
                     var groupadmin = [];
+//                    var qwe = api.columns([1, 2]).data().each(function (data, i) {
+//                        var groups;
+//                        console.log(i);
+////                        data.each(function (element) {
+////                            console.log(element);
+////                        });
+//                        console.log(data);
+//                        data.forEach(function (p1, p2, p3) {
+//                            if (last !== p1) {
+//                                $(rows).eq(p2).before(function () {
+//                                        if (p2 === 0) {
+//                                            return '<tr class="group" id="' + p2 + '"><td colspan="6">' + p1 + '</td>';
+//                                        } else if (p2 === p3.length) {
+//                                            return '<td colspan="3">' + p1 + '</td></tr>';
+//                                        } else {
+//                                            return '<td colspan="3">' + p1 + '</td>';
+//                                        }
+//                                    }
+//                                );
+//
+//                                if (i === 0) {
+//                                    console.log("true");
+//                                    groupadmin.push(p2);
+//                                }
+//
+//                                last = p1;
+//                            }
+//                        });
+//                        console.log(data[0]);
+//                        console.log("---");
+//
+//                    });
 
                     api.column(1, {page: 'current'}).data().each(function (group, i) {
-
-                        console.log(i);
+                        var secondColumn = "";
+                        api.column(2, {page: 'current'}).data().each(function (text) {
+                            secondColumn = text;
+                        });
                         if (last !== group) {
                             $(rows).eq(i).before(
-                                '<tr class="group" id="'+ i +'"><td colspan="6">' + group + '</td></tr>'
+//                                '<tr class="group" id="'+ i +'"><th colspan="3">name</th><th colspan="3">code</th></tr>' +
+                                '<tr class="group" id="'+ i +'"><td colspan="2"></td><td>' + group + '</td>' +
+                                '<td colspan="3">' + 'code: ' +  secondColumn + '</td></tr>'
                             );
 
                             groupadmin.push(i);
