@@ -12,6 +12,61 @@
 <body>
 <div class="container">
     <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+
+    <button id="addWBS" class="btn btn-primary btn-md" data-toggle="modal" data-target="#addWBSModal">
+        add WBS
+    </button>
+
+    <div class="modal fade" id="addWBSModal" tabindex="-1" role="dialog"
+         aria-labelledby="addWBSModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="addWBSModalLabel">
+                        Введите данные
+                    </h4>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body">
+
+                    <form role="form">
+                        <div class="form-group">
+                            <label for="wbsName">Название WBS</label>
+                            <input type="text" class="form-control"
+                                   id="wbsName" placeholder="Введите название WBS"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="wbsCode">Код WBS</label>
+                            <input type="text" class="form-control"
+                                   id="wbsCode" placeholder="Введите код WBS"/>
+                        </div>
+                        <button data-backdrop="static" id="addWBSSubmit" type="button" class="btn btn-default">Добавить</button>
+                    </form>
+
+
+                </div>
+
+                <!-- Modal Footer -->
+                <!--<div class="modal-footer">-->
+                    <!--<button type="button" class="btn btn-default"-->
+                            <!--data-dismiss="modal">-->
+                        <!--Отмена-->
+                    <!--</button>-->
+                    <!--<button type="button" class="btn btn-primary">-->
+                        <!--Save changes-->
+                    <!--</button>-->
+                <!--</div>-->
+            </div>
+        </div>
+    </div>
+
     <table id="example" class="display select" cellspacing="0" width="100%">
         <thead>
         <tr>
@@ -27,6 +82,17 @@
         </tr>
         </thead>
         <div th:each="wbs : ${wbsList}">
+            <!--todo if activities empty create wbs row-->
+            <tr class="hidden" th:if="${#lists.isEmpty(wbs.activities)}">
+                <td></td>
+                <td class="hidden" th:text="${wbs.name}"></td>
+                <td class="hidden" th:text="${wbs.code}"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
             <tr th:each="activity : ${wbs.activities}">
                 <td><input type="checkbox"/></td>
                 <td class="hidden" th:text="${wbs.name}"></td>
@@ -298,50 +364,15 @@
                     var rows = api.rows({page: 'current'}).nodes();
                     var last = null;
 
+                    var secondColumn = api.column(2, {page: 'current'}).data();
+
                     var groupadmin = [];
-//                    var qwe = api.columns([1, 2]).data().each(function (data, i) {
-//                        var groups;
-//                        console.log(i);
-////                        data.each(function (element) {
-////                            console.log(element);
-////                        });
-//                        console.log(data);
-//                        data.forEach(function (p1, p2, p3) {
-//                            if (last !== p1) {
-//                                $(rows).eq(p2).before(function () {
-//                                        if (p2 === 0) {
-//                                            return '<tr class="group" id="' + p2 + '"><td colspan="6">' + p1 + '</td>';
-//                                        } else if (p2 === p3.length) {
-//                                            return '<td colspan="3">' + p1 + '</td></tr>';
-//                                        } else {
-//                                            return '<td colspan="3">' + p1 + '</td>';
-//                                        }
-//                                    }
-//                                );
-//
-//                                if (i === 0) {
-//                                    console.log("true");
-//                                    groupadmin.push(p2);
-//                                }
-//
-//                                last = p1;
-//                            }
-//                        });
-//                        console.log(data[0]);
-//                        console.log("---");
-//
-//                    });
 
                     api.column(1, {page: 'current'}).data().each(function (group, i) {
-                        var secondColumn = "";
-                        api.column(2, {page: 'current'}).data().each(function (text) {
-                            secondColumn = text;
-                        });
                         if (last !== group) {
                             $(rows).eq(i).before(
-//                                '<tr class="group" id="'+ i +'"><th colspan="3">name</th><th colspan="3">code</th></tr>' +
                                 '<tr class="group" id="'+ i +'"><td colspan="2"></td><td>' + group + '</td>' +
-                                '<td colspan="3">' + 'code: ' +  secondColumn + '</td></tr>'
+                                '<td colspan="3">' + 'code: ' +  secondColumn[i] + '</td></tr>'
                             );
 
                             groupadmin.push(i);
@@ -451,6 +482,43 @@
 //                e.preventDefault();
 //            });
         });
+
+        /*]]>*/
+
+    </script>
+
+    <script>
+
+        /*<![CDATA[*/
+
+        jQuery(document).ready(
+            function ($) {
+
+                $("#addWBSSubmit").click(function (event) {
+                    var wbs = {};
+                    wbs["projectId"] = document.URL.substr(document.URL.lastIndexOf('/') + 1);
+                    wbs["name"] = $("#wbsName").val();
+                    wbs["code"] = $("#wbsCode").val();
+                    $.ajax({
+                        type: "POST",
+                        contentType: "application/json",
+                        url: "/add_wbs",
+                        data: JSON.stringify(wbs),
+                        dataType: 'json',
+                        timeout: 600000,
+                        success: function (wbs) {
+                            $(this).modal("hide");
+                            $(this).find("input,textarea,select").val('').end();
+                        },
+                        error: function (e) {
+
+                        }
+                    })
+                })
+            }
+
+
+        )
 
         /*]]>*/
 
