@@ -5,7 +5,6 @@
     <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
     <link rel="stylesheet" href="../css/font-awesome.min.css"/>
     <script src="../js/bootstrap-treefy.js"></script>
-    <!--<link rel="stylesheet" href="../css/datatables.min.css"/>-->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.7/css/jquery.dataTables.min.css"/>
     <script src="../js/datatables.min.js"></script>
 </head>
@@ -47,7 +46,9 @@
                             <input type="text" class="form-control"
                                    id="wbsCode" placeholder="Введите код WBS"/>
                         </div>
-                        <button data-backdrop="static" id="addWBSSubmit" type="button" class="btn btn-default">Добавить</button>
+                        <button data-backdrop="static" id="addWBSSubmit" type="button" class="btn btn-default">
+                            Добавить
+                        </button>
                     </form>
 
 
@@ -55,13 +56,13 @@
 
                 <!-- Modal Footer -->
                 <!--<div class="modal-footer">-->
-                    <!--<button type="button" class="btn btn-default"-->
-                            <!--data-dismiss="modal">-->
-                        <!--Отмена-->
-                    <!--</button>-->
-                    <!--<button type="button" class="btn btn-primary">-->
-                        <!--Save changes-->
-                    <!--</button>-->
+                <!--<button type="button" class="btn btn-default"-->
+                <!--data-dismiss="modal">-->
+                <!--Отмена-->
+                <!--</button>-->
+                <!--<button type="button" class="btn btn-primary">-->
+                <!--Save changes-->
+                <!--</button>-->
                 <!--</div>-->
             </div>
         </div>
@@ -71,39 +72,45 @@
         <thead>
         <tr>
             <th><input name="select_all" value="1" type="checkbox"/></th>
+            <th class="hidden">WBS Id</th>
             <th class="hidden">WBS Name</th>
             <th class="hidden">WBS Code</th>
             <th>Id</th>
             <th>Name</th>
-            <!--duration and dates-->
             <th>Type</th>
             <th>Status</th>
             <th>Completion</th>
+            <th></th>
         </tr>
         </thead>
-        <div th:each="wbs : ${wbsList}">
-            <!--todo if activities empty create wbs row-->
-            <tr class="hidden" th:if="${#lists.isEmpty(wbs.activities)}">
-                <td></td>
-                <td class="hidden" th:text="${wbs.name}"></td>
-                <td class="hidden" th:text="${wbs.code}"></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr th:each="activity : ${wbs.activities}">
-                <td><input type="checkbox"/></td>
-                <td class="hidden" th:text="${wbs.name}"></td>
-                <td class="hidden" th:text="${wbs.code}"></td>
-                <td th:text="${activity.id}"></td>
-                <td th:text="${activity.activityName}"></td>
-                <td th:text="${activity.typeId}"></td>
-                <td th:text="${activity.statusId}"></td>
-                <td th:text="${activity.percentageCompletion}"></td>
-            </tr>
-        </div>
+        <tbody>
+            <div id="examplebody" th:each="wbs : ${wbsList}">
+                <tr class="hidden" th:if="${#lists.isEmpty(wbs.activities)}">
+                    <td></td>
+                    <td class="hidden" th:text="${wbs.id}"></td>
+                    <td class="hidden" th:text="${wbs.name}"></td>
+                    <td class="hidden" th:text="${wbs.code}"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr th:each="activity : ${wbs.activities}">
+                    <td><input type="checkbox"/></td>
+                    <td class="hidden" th:text="${wbs.id}"></td>
+                    <td class="hidden" th:text="${wbs.name}"></td>
+                    <td class="hidden" th:text="${wbs.code}"></td>
+                    <td th:text="${activity.id}"></td>
+                    <td th:text="${activity.activityName}"></td>
+                    <td th:text="${activity.typeId}"></td>
+                    <td th:text="${activity.statusId}"></td>
+                    <td th:text="${activity.percentageCompletion}"></td>
+                    <td></td>
+                </tr>
+            </div>
+        </tbody>
     </table>
 
     <div class="list-group-item" id="grandparent">
@@ -333,8 +340,8 @@
             }
         }
 
-        $(document).ready(function () {
-            // Array holding selected row IDs
+        function tableCreation() {
+// Array holding selected row IDs
             var rows_selected = [];
 
             var table = $('#example').DataTable({
@@ -348,7 +355,7 @@
                         return '<input type="checkbox">';
                     }
                 }],
-                'order': [1, 'asc'],
+                'order': [2, 'asc'],
                 'rowCallback': function (row, data, dataIndex) {
                     // Get row ID
                     var rowId = data[0];
@@ -364,15 +371,28 @@
                     var rows = api.rows({page: 'current'}).nodes();
                     var last = null;
 
-                    var secondColumn = api.column(2, {page: 'current'}).data();
+                    var wbsIdColumn = api.column(1, {page: 'current'}).data();
+                    var wbsCodeColumn = api.column(3, {page: 'current'}).data();
 
                     var groupadmin = [];
 
-                    api.column(1, {page: 'current'}).data().each(function (group, i) {
+                    api.column(2, {page: 'current'}).data().each(function (group, i) {
                         if (last !== group) {
                             $(rows).eq(i).before(
-                                '<tr class="group" id="'+ i +'"><td colspan="2"></td><td>' + group + '</td>' +
-                                '<td colspan="3">' + 'code: ' +  secondColumn[i] + '</td></tr>'
+                                '<tr class="group" id="' + i + '">' +
+                                    '<td>' +
+                                        '<button id="button_' + i + '"><span class="glyphicon glyphicon-plus"></span></button>' +
+                                    '</td>' +
+                                    '<td class="hidden">' + wbsIdColumn[i] + '</td>' +
+                                    '<td></td>' +
+                                    '<td>' + group + '</td>' +
+                                    '<td colspan="3">' + 'code: ' + wbsCodeColumn[i] + '</td>' +
+                                    '<td>' +
+                                        '<button id="editWBS" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editWBSModal">' +
+                                            'edit WBS' +
+                                        '</button>' +
+                                    '</td>' +
+                                '</tr>'
                             );
 
                             groupadmin.push(i);
@@ -383,16 +403,31 @@
 
                     for (var k = 0; k < groupadmin.length; k++) {
                         // Code added for adding class to sibling elements as "group_<id>"
+                        var regexp = new RegExp('group_\\d+');
+
+                        var arr = $("#" + groupadmin[k]).nextUntil("#" + groupadmin[k + 1]);
+                        for (var i = 0; i < arr.length; i++) {
+                            arr[i].className = arr[i].className.replace(regexp, "");
+                        };
                         $("#" + groupadmin[k]).nextUntil("#" + groupadmin[k + 1]).addClass(' group_' + groupadmin[k]);
                         // Code added for adding Toggle functionality for each group
-                        $("#" + groupadmin[k]).click(function () {
-                            var gid = $(this).attr("id");
+                        $("#button_" + groupadmin[k]).off("click");
+                        $("#button_" + groupadmin[k]).click(function () {
+                            var gid = $(this).attr("id").substr(7);
+                            console.log("id:" + $(this).attr("id").substr(7));
                             $(".group_" + gid).slideToggle(300);
                         });
 
                     }
                 },
                 'paging': false
+            });
+
+            // Handle click on edit button
+            $('#example tbody').on('click', 'button', function (e) {
+                var data = $(this).closest('tr');
+                console.log(data.find('td')[0]);
+                console.log(data.find('td')[1]);
             });
 
             // Handle click on checkbox
@@ -481,6 +516,9 @@
 //                // Prevent actual form submission
 //                e.preventDefault();
 //            });
+        }
+        $(document).ready(function () {
+            tableCreation();
         });
 
         /*]]>*/
@@ -495,6 +533,7 @@
             function ($) {
 
                 $("#addWBSSubmit").click(function (event) {
+                    var table = $("#example").DataTable();
                     var wbs = {};
                     wbs["projectId"] = document.URL.substr(document.URL.lastIndexOf('/') + 1);
                     wbs["name"] = $("#wbsName").val();
@@ -504,20 +543,25 @@
                         contentType: "application/json",
                         url: "/add_wbs",
                         data: JSON.stringify(wbs),
-                        dataType: 'json',
+//                        dataType: 'json',
                         timeout: 600000,
-                        success: function (wbs) {
-                            $(this).modal("hide");
-                            $(this).find("input,textarea,select").val('').end();
+//                        TODO: хранить в result id?
+                        success: function (result) {
+                            $("#addWBSModal").modal("hide");
+                            $("#addWBSModal").find("input,textarea,select").val('').end();
+                            var rowNode = table.row.add(
+                                [ "", result, wbs["name"], wbs["code"], "", "", "", "", "", ""]
+                            );
+                            table.draw();
+                            rowNode.node().classList.add('hidden')
                         },
                         error: function (e) {
-
+                            console.log("error: " + e.statusText);
+//                            alert("fail");
                         }
                     })
                 })
             }
-
-
         )
 
         /*]]>*/

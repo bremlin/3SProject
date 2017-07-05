@@ -67,7 +67,7 @@ public class EntityCreatorController {
         wbsEntity.setParentId(0);
         wbsEntity.setIndexNumber(1);
 
-        wbsService.saveOrUpdate(wbsEntity);
+        result = String.valueOf(wbsService.saveOrUpdate(wbsEntity).getId());
 
         return ResponseEntity.ok(result);
     }
