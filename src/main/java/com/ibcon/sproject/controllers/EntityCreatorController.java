@@ -9,9 +9,7 @@ import com.ibcon.sproject.services.crud.wbs.WBSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.stream.Collectors;
@@ -44,8 +42,7 @@ public class EntityCreatorController {
     }
 
     @PostMapping("/add_wbs")
-    public ResponseEntity<?> createWBS(
-            @Valid @RequestBody WBS wbs, Errors errors) {
+    public ResponseEntity<?> createWBS(@Valid @RequestBody WBS wbs, Errors errors) {
         String result = "";
 
         if (errors.hasErrors()) {
@@ -59,7 +56,12 @@ public class EntityCreatorController {
         }
 
         com.ibcon.sproject.domain.WBS wbsEntity = new com.ibcon.sproject.domain.WBS();
+        //TODO лишнее?
         Project project = projectService.getById(wbs.getProjectId());
+
+        if (wbs.getId() != null) {
+            wbsEntity = wbsService.getById(wbs.getId());
+        }
         wbsEntity.setName(wbs.getName());
         wbsEntity.setCode(wbs.getCode());
         wbsEntity.setProject(project);
@@ -70,5 +72,19 @@ public class EntityCreatorController {
         result = String.valueOf(wbsService.saveOrUpdate(wbsEntity).getId());
 
         return ResponseEntity.ok(result);
+    }
+
+    //TODO USE JSON
+    //TODO какой маппинг?
+    @GetMapping(value = "/edit_wbs", produces = "application/json")
+    public ResponseEntity<?> editWBS(@RequestParam("id") String str) {
+        com.ibcon.sproject.domain.WBS wbs = wbsService.getById(Integer.valueOf(str));
+
+        WBS wbsResult = new WBS();
+        wbsResult.setId(Integer.valueOf(str));
+        wbsResult.setProjectId(wbs.getProject().getId());
+        wbsResult.setName(wbs.getName());
+        wbsResult.setCode(wbs.getCode());
+        return ResponseEntity.ok(wbsResult);
     }
 }

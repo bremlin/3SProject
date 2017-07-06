@@ -9,6 +9,7 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+//TODO брать проект из toString()
 @EntityScan
 @Entity
 //@Proxy(lazy = false)    //без этого не получается достать projectId из wbs перед сохранением

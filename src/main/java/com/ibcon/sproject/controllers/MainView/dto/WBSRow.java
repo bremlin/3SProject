@@ -2,10 +2,8 @@ package com.ibcon.sproject.controllers.MainView.dto;
 
 import lombok.Data;
 
-public @Data
-class WBS {
+public @Data class WBSRow {
     Integer id;
-    Integer projectId;
     String name;
     String code;
 }

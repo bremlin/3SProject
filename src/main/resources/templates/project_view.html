@@ -35,7 +35,13 @@
                 <!-- Modal Body -->
                 <div class="modal-body">
 
+                    <!--TODO id в форму-->
                     <form role="form">
+                        <div class="form-group hidden">
+                            <label for="wbsId">WBS Id</label>
+                            <input type="text" class="form-control"
+                                   id="wbsId"/>
+                        </div>
                         <div class="form-group">
                             <label for="wbsName">Название WBS</label>
                             <input type="text" class="form-control"
@@ -84,32 +90,33 @@
         </tr>
         </thead>
         <tbody>
-            <div id="examplebody" th:each="wbs : ${wbsList}">
-                <tr class="hidden" th:if="${#lists.isEmpty(wbs.activities)}">
-                    <td></td>
-                    <td class="hidden" th:text="${wbs.id}"></td>
-                    <td class="hidden" th:text="${wbs.name}"></td>
-                    <td class="hidden" th:text="${wbs.code}"></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr th:each="activity : ${wbs.activities}">
-                    <td><input type="checkbox"/></td>
-                    <td class="hidden" th:text="${wbs.id}"></td>
-                    <td class="hidden" th:text="${wbs.name}"></td>
-                    <td class="hidden" th:text="${wbs.code}"></td>
-                    <td th:text="${activity.id}"></td>
-                    <td th:text="${activity.activityName}"></td>
-                    <td th:text="${activity.typeId}"></td>
-                    <td th:text="${activity.statusId}"></td>
-                    <td th:text="${activity.percentageCompletion}"></td>
-                    <td></td>
-                </tr>
-            </div>
+        <!--TODO добавить wbs в таблицу заранее и расставить группы-->
+        <div id="examplebody" th:each="wbs : ${wbsList}">
+            <tr class="hidden" th:if="${#lists.isEmpty(wbs.activities)}">
+                <td></td>
+                <td class="hidden" th:text="${wbs.id}"></td>
+                <td class="hidden" th:text="${wbs.name}"></td>
+                <td class="hidden" th:text="${wbs.code}"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr th:each="activity : ${wbs.activities}">
+                <td><input type="checkbox"/></td>
+                <td class="hidden" th:text="${wbs.id}"></td>
+                <td class="hidden" th:text="${wbs.name}"></td>
+                <td class="hidden" th:text="${wbs.code}"></td>
+                <td th:text="${activity.id}"></td>
+                <td th:text="${activity.activityName}"></td>
+                <td th:text="${activity.typeId}"></td>
+                <td th:text="${activity.statusId}"></td>
+                <td th:text="${activity.percentageCompletion}"></td>
+                <td></td>
+            </tr>
+        </div>
         </tbody>
     </table>
 
@@ -380,18 +387,18 @@
                         if (last !== group) {
                             $(rows).eq(i).before(
                                 '<tr class="group" id="' + i + '">' +
-                                    '<td>' +
-                                        '<button id="button_' + i + '"><span class="glyphicon glyphicon-plus"></span></button>' +
-                                    '</td>' +
-                                    '<td class="hidden">' + wbsIdColumn[i] + '</td>' +
-                                    '<td></td>' +
-                                    '<td>' + group + '</td>' +
-                                    '<td colspan="3">' + 'code: ' + wbsCodeColumn[i] + '</td>' +
-                                    '<td>' +
-                                        '<button id="editWBS" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editWBSModal">' +
-                                            'edit WBS' +
-                                        '</button>' +
-                                    '</td>' +
+                                '<td>' +
+                                '<button id="button_' + i + '"><span class="glyphicon glyphicon-plus"></span></button>' +
+                                '</td>' +
+                                '<td class="hidden">' + wbsIdColumn[i] + '</td>' +
+                                '<td></td>' +
+                                '<td>' + group + '</td>' +
+                                '<td colspan="3">' + 'code: ' + wbsCodeColumn[i] + '</td>' +
+                                '<td>' +
+                                '<button id="editWBS" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addWBSModal">' +
+                                'edit WBS' +
+                                '</button>' +
+                                '</td>' +
                                 '</tr>'
                             );
 
@@ -408,7 +415,8 @@
                         var arr = $("#" + groupadmin[k]).nextUntil("#" + groupadmin[k + 1]);
                         for (var i = 0; i < arr.length; i++) {
                             arr[i].className = arr[i].className.replace(regexp, "");
-                        };
+                        }
+                        ;
                         $("#" + groupadmin[k]).nextUntil("#" + groupadmin[k + 1]).addClass(' group_' + groupadmin[k]);
                         // Code added for adding Toggle functionality for each group
                         $("#button_" + groupadmin[k]).off("click");
@@ -425,9 +433,31 @@
 
             // Handle click on edit button
             $('#example tbody').on('click', 'button', function (e) {
+                if ($(this).attr("id") !== "editWBS") {
+                    return;
+                }
                 var data = $(this).closest('tr');
-                console.log(data.find('td')[0]);
-                console.log(data.find('td')[1]);
+                data[0].classList.add("editing");
+                var wbsId = {};
+                wbsId["id"] = data.find('td')[1].innerText;
+                $.ajax({
+                    type: "GET",
+                    url: "/edit_wbs",
+                    data: wbsId,
+                    dataType: 'text',
+                    timeout: 600000,
+                    success: function (result) {
+                        result = JSON.parse(result);
+                        $("#wbsId")[0].value = result["id"];
+                        $("#wbsName")[0].value = result["name"];
+                        $("#wbsCode")[0].value = result["code"];
+                    },
+                    error: function (e) {
+                        console.log("error: " + e.statusText);
+                        data[0].classList.remove("editing");
+//                            alert("fail");
+                    }
+                })
             });
 
             // Handle click on checkbox
@@ -536,6 +566,7 @@
                     var table = $("#example").DataTable();
                     var wbs = {};
                     wbs["projectId"] = document.URL.substr(document.URL.lastIndexOf('/') + 1);
+                    wbs["id"] = $("#wbsId").val();
                     wbs["name"] = $("#wbsName").val();
                     wbs["code"] = $("#wbsCode").val();
                     $.ajax({
@@ -548,12 +579,20 @@
 //                        TODO: хранить в result id?
                         success: function (result) {
                             $("#addWBSModal").modal("hide");
+                            if ($("#wbsId").val() === "") {
+                                var rowNode = table.row.add(
+                                    ["", result, wbs["name"], wbs["code"], "", "", "", "", "", ""]
+                                );
+                                table.draw();
+                                rowNode.node().classList.add('hidden')
+                            } else {
+                                $("#example").find(".editing").find("td")[1].innerText = wbs["id"];
+                                $("#example").find(".editing").find("td")[3].innerText = wbs["name"];
+                                $("#example").find(".editing").find("td")[4].innerText = wbs["code"];
+                                $("#example").find(".editing").removeClass("editing");
+                                //TODO изменять все зависимые activities
+                            }
                             $("#addWBSModal").find("input,textarea,select").val('').end();
-                            var rowNode = table.row.add(
-                                [ "", result, wbs["name"], wbs["code"], "", "", "", "", "", ""]
-                            );
-                            table.draw();
-                            rowNode.node().classList.add('hidden')
                         },
                         error: function (e) {
                             console.log("error: " + e.statusText);
