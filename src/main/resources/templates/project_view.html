@@ -91,6 +91,7 @@
         </thead>
         <tbody>
         <!--TODO добавить wbs в таблицу заранее и расставить группы-->
+        <!--TODO заполнять ajaxом-->
         <div id="examplebody" th:each="wbs : ${wbsList}">
             <tr class="hidden" th:if="${#lists.isEmpty(wbs.activities)}">
                 <td></td>
@@ -393,7 +394,7 @@
                                 '<td class="hidden">' + wbsIdColumn[i] + '</td>' +
                                 '<td></td>' +
                                 '<td>' + group + '</td>' +
-                                '<td colspan="3">' + 'code: ' + wbsCodeColumn[i] + '</td>' +
+                                '<td colspan="3">' + wbsCodeColumn[i] + '</td>' +
                                 '<td>' +
                                 '<button id="editWBS" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addWBSModal">' +
                                 'edit WBS' +
@@ -586,9 +587,20 @@
                                 table.draw();
                                 rowNode.node().classList.add('hidden')
                             } else {
-                                $("#example").find(".editing").find("td")[1].innerText = wbs["id"];
-                                $("#example").find(".editing").find("td")[3].innerText = wbs["name"];
-                                $("#example").find(".editing").find("td")[4].innerText = wbs["code"];
+                                var editedRow = $("#example").find(".editing");
+                                var editedRowId = editedRow.attr("id");
+
+                                var activities = $("#" + editedRowId).nextUntil("#" + + (editedRowId + 1));
+                                for (var i = 0; i < activities.length; i++) {
+                                    table.cell(activities[i], 2).data(wbs["name"]);
+                                    table.cell(activities[i], 3).data(wbs["code"]);
+//                                    activities.find("td")[2].innerText = wbs["name"];
+//                                    activities.find("td")[3].innerText = wbs["code"];
+                                }
+
+                                editedRow.find("td")[1].innerText = wbs["id"];
+                                editedRow.find("td")[3].innerText = wbs["name"];
+                                editedRow.find("td")[4].innerText = wbs["code"];
                                 $("#example").find(".editing").removeClass("editing");
                                 //TODO изменять все зависимые activities
                             }

@@ -14,12 +14,13 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
-@Profile("springdatajpa")
+@Service("userServiceCrud")
 public class UserServiceCrudImp implements UserServiceCrud {
     private UserRepository userRepository;
 
     private RoleService roleService;
+
+    private EncryptionService encryptionService;
 
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
@@ -30,8 +31,6 @@ public class UserServiceCrudImp implements UserServiceCrud {
     public void setRoleService(RoleService roleService) {
         this.roleService = roleService;
     }
-
-    private EncryptionService encryptionService;
 
     @Autowired
     public void setEncryptionService(EncryptionService encryptionService) {
@@ -65,6 +64,7 @@ public class UserServiceCrudImp implements UserServiceCrud {
             User oldUser = getById(newUser.getId());
             newUser.setEncryptedPassword(oldUser.getEncryptedPassword());
         }
+
 
         return saveOrUpdate(newUser);
     }

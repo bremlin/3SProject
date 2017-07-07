@@ -18,6 +18,7 @@ public abstract class AbstractUserFormCreator implements UserFormModelCreator {
         user.setRoles(new HashSet<>());
         for (Integer roleId : roleIds) {
             user.addRole(roleService.getById(roleId));
+            roleService.getById(roleId).addUser(user);
         }
         return user;
     }
