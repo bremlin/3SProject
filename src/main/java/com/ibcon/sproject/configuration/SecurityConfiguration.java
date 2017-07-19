@@ -42,6 +42,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        //TODO access to resources?
         http.authorizeRequests().antMatchers("/").permitAll()
                 .antMatchers("/user*").hasAuthority("ADMIN")
                 .anyRequest().authenticated()

@@ -44,6 +44,7 @@ public class UserDetailsImpl implements UserDetails {
         return name;
     }
 
+    //TODO здесь проверять дату
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -54,6 +55,7 @@ public class UserDetailsImpl implements UserDetails {
         return true;
     }
 
+    //TODO здесь проверять дату
     @Override
     public boolean isCredentialsNonExpired() {
         return true;

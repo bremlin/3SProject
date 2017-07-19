@@ -23,4 +23,11 @@ public class MainViewController {
         model.addAttribute("wbsList", wbsService.findByProjectId(id));
         return "project_view";
     }
+
+    @RequestMapping(value = "/test_ajax", method = RequestMethod.GET)
+    public String testAjax(Model model) {
+        //TODO проверить списки с activities для каждой wbs
+//        model.addAttribute("wbsList", wbsService.findByProjectId(id));
+        return "test_ajax_table";
+    }
 }

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="ru">
+    <title>Ajax</title>
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+    <link rel="stylesheet" href="../css/font-awesome.min.css"/>
+    <script src="../js/bootstrap-treefy.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css"/>
+    <script src="../js/datatables.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../css/jquery.treetable.css" />
+    <link rel="stylesheet" type="text/css" href="../css/treeTable.dataTables.css"/>
+    <script type="text/javascript" language="javascript" src="/../js/jquery.treetable.js"></script>
+    <script type="text/javascript" language="javascript" src="../js/dataTables.treeTable.js"></script>
+</head>
+<body>
+<div class="container">
+    <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+
+    <table id="example_simple" class="display" cellspacing="0" width="100%">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Position</th>
+            <th>Salary</th>
+            <th>Start Date</th>
+        </tr>
+        </thead>
+        <tfoot>
+        <tr>
+            <th>Name</th>
+            <th>Position</th>
+            <th>Salary</th>
+            <th>Start Date</th>
+        </tr>
+        </tfoot>
+    </table>
+
+    <table id="wbs_table" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th><input name="select_all" value="1" type="checkbox"/></th>
+                <th>Id</th>
+                <th>Parent Id</th>
+                <th>Name</th>
+                <th>Code</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th><input name="select_all" value="1" type="checkbox"/></th>
+                <th>Id</th>
+                <th>Parent Id</th>
+                <th>Name</th>
+                <th>Code</th>
+                <th></th>
+            </tr>
+        </tfoot>
+    </table>
+
+    <table id="tree" class="display" cellspacing="0" width="100%">
+        <thead>
+        <tr>
+            <th><input name="select_all" value="1" type="checkbox"/></th>
+            <th>Id</th>
+            <th>Parent Id</th>
+            <th>Name</th>
+            <th>Code</th>
+            <th></th>
+        </tr>
+        </thead>
+    </table>
+</div>
+
+<!--<script>-->
+    <!--/*<![CDATA[*/-->
+    <!--$(document).ready(function() {-->
+        <!--$('#example_simple').DataTable( {-->
+            <!--ajax : {-->
+                <!--url : '/get_project' + /*document.URL.substr(document.URL.lastIndexOf('/') + 1)*/ '?id=5',-->
+                <!--dataSrc : function(json) {-->
+                    <!--var temp, item, data = [];-->
+<!--//                    for (var i=0;i<json.Response.Object.length;i++) {-->
+<!--//                        temp = json.Response.Object[i].Attributes.Attribute;-->
+<!--//                        item = {};-->
+<!--//                        for (var elem in temp) {-->
+<!--//                            item[temp[elem].AttributeName] = temp[elem].AttributeValue-->
+<!--//                        }-->
+<!--//                        data.push(item);-->
+<!--//                    }-->
+
+                    <!--for (var elem in json) {-->
+                        <!--item = {};-->
+                        <!--item["id"] = "";-->
+                        <!--item["id"] = "";-->
+                        <!--item["id"] = "";-->
+                        <!--item["id"] = "";-->
+                        <!--item["id"] = "";-->
+                    <!--}-->
+
+                    <!--data = [];-->
+                    <!--item = {};-->
+                    <!--item["name"] = "Tiger Nixon";-->
+                    <!--item["position"] = "System Architect";-->
+                    <!--item["salary"] = "$320,800";-->
+                    <!--item["start_date"] = "2011/04/25";-->
+                    <!--item["type"] = 1;-->
+                    <!--data.push(item);-->
+                    <!--return data-->
+                <!--}-->
+            <!--},-->
+            <!--columns: [-->
+                <!--{data: "name"},-->
+                <!--{data: "position"},-->
+                <!--{data: "salary"},-->
+                <!--{data: "start_date"},-->
+<!--//                {data: "completion"}-->
+            <!--],-->
+            <!--fnRowCallback: function( nRow, aData, iDisplayIndex ) {-->
+                <!--/* Append the grade to the default row class name */-->
+<!--//                console.log(aData);-->
+<!--//                if ( aData[1] > 0)-->
+<!--//                {-->
+<!--//                    $('td:eq(1)', nRow).html( "<span class='green'>" + $('td:eq(1)', nRow).html() + "</span>" );-->
+<!--//                } else {-->
+                    <!--//set to red-->
+<!--//                }-->
+                <!--// do the same for td[2]-->
+<!--//                return nRow;-->
+            <!--},-->
+<!--//            success: function (result) {-->
+<!--//                console.log(result)-->
+<!--//            },-->
+<!--//            error: function (er) {-->
+<!--//                console.log(er)-->
+<!--//            }-->
+        <!--} );-->
+    <!--} );-->
+    <!--/*]]>*/-->
+<!--</script>-->
+
+<!--<script>-->
+
+    <!--/*<![CDATA[*/-->
+
+    <!--//-->
+    <!--// Updates "Select all" control in a data table-->
+    <!--//-->
+    <!--function updateDataTableSelectAllCtrl(table) {-->
+        <!--var $table = table.table().node();-->
+        <!--var $chkbox_all = $('tbody input[type="checkbox"]', $table);-->
+        <!--var $chkbox_checked = $('tbody input[type="checkbox"]:checked', $table);-->
+        <!--var chkbox_select_all = $('thead input[name="select_all"]', $table).get(0);-->
+
+        <!--// If none of the checkboxes are checked-->
+        <!--if ($chkbox_checked.length === 0) {-->
+            <!--chkbox_select_all.checked = false;-->
+            <!--if ('indeterminate' in chkbox_select_all) {-->
+                <!--chkbox_select_all.indeterminate = false;-->
+            <!--}-->
+
+            <!--// If all of the checkboxes are checked-->
+        <!--} else if ($chkbox_checked.length === $chkbox_all.length) {-->
+            <!--chkbox_select_all.checked = true;-->
+            <!--if ('indeterminate' in chkbox_select_all) {-->
+                <!--chkbox_select_all.indeterminate = false;-->
+            <!--}-->
+
+            <!--// If some of the checkboxes are checked-->
+        <!--} else {-->
+            <!--chkbox_select_all.checked = true;-->
+            <!--if ('indeterminate' in chkbox_select_all) {-->
+                <!--chkbox_select_all.indeterminate = true;-->
+            <!--}-->
+        <!--}-->
+    <!--}-->
+
+    <!--function tableCreation() {-->
+<!--// Array holding selected row IDs-->
+        <!--var rows_selected = [];-->
+
+        <!--var json;-->
+
+        <!--var table = $('#wbs_table').DataTable({-->
+            <!--"sAjaxDataProp" : "",-->
+            <!--'ajax' : {-->
+                <!--url: '/get_wbs_list?id=5'-->
+            <!--},-->
+<!--//            'ajax' : '/get_wbs_list?id=5',-->
+            <!--'initComplete' : function(settings, result) {-->
+                <!--console.log(result);-->
+                <!--json = result;-->
+            <!--},-->
+            <!--'columns' : [-->
+                <!--{data: null},-->
+                <!--{data: "id"},-->
+                <!--{data: "parentId"},-->
+                <!--{data: "name"},-->
+                <!--{data: "code"},-->
+                <!--{"data": null, defaultContent: ""}-->
+            <!--],-->
+            <!--'columnDefs': [{-->
+                <!--'targets': 0,-->
+                <!--'searchable': false,-->
+                <!--'orderable': false,-->
+                <!--'width': '1%',-->
+                <!--'className': 'dt-body-center',-->
+                <!--'render': function (data, type, full, meta) {-->
+                    <!--return '<input type="checkbox">';-->
+                <!--}-->
+            <!--}],-->
+            <!--'order': [2, 'asc'],-->
+            <!--'rowCallback': function (row, data, dataIndex) {-->
+                <!--// Get row ID-->
+                <!--var rowId = data[0];-->
+
+                <!--// If row ID is in the list of selected row IDs-->
+                <!--if ($.inArray(rowId, rows_selected) !== -1) {-->
+                    <!--$(row).find('input[type="checkbox"]').prop('checked', true);-->
+                    <!--$(row).addClass('selected');-->
+                <!--}-->
+            <!--},-->
+            <!--"drawCallback": function (settings) {-->
+                <!--var api = this.api();-->
+                <!--var rows = api.rows({page: 'current'}).nodes();-->
+                <!--var last = null;-->
+
+                <!--var wbsIdColumn = api.column(1, {page: 'current'}).data();-->
+                <!--var wbsCodeColumn = api.column(3, {page: 'current'}).data();-->
+
+                <!--var groupadmin = [];-->
+
+                <!--api.column(2, {page: 'current'}).data().each(function (group, i) {-->
+                    <!--if (last !== group) {-->
+                        <!--var json_data = api.ajax.json();-->
+                        <!--console.log(json_data);-->
+                        <!--$(rows).eq(i).before(-->
+                            <!--function () {-->
+                                <!--//TODO преобразовать в мапу?-->
+                                <!--var node = json_data.find(function(data){ return data.id == wbsIdColumn[i] });-->
+                                <!--if (node.parentId == 0) {-->
+                                    <!--return;-->
+                                <!--}-->
+                                <!--var parent = json_data.find(function(data){ return data.id == node.parentId });-->
+                                <!--console.log(parent.parentId);-->
+                                <!--return '<tr class="group" id="' + i + '">' +-->
+                                <!--'<td>' +-->
+                                <!--'<button id="button_' + i + '"><span class="glyphicon glyphicon-plus"></span></button>' +-->
+                                <!--'</td>' +-->
+                                <!--'<td>' + parent.id+ '</td>' +-->
+                                <!--'<td>' + parent.parentId + '</td>' +-->
+                                <!--'<td colspan="2">' + parent.name + '</td>' +-->
+                                <!--'<td>' +-->
+                                <!--'<button id="editWBS" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addWBSModal">' +-->
+                                <!--'edit WBS' +-->
+                                <!--'</button>' +-->
+                                <!--'</td>' +-->
+                                <!--'</tr>'-->
+                            <!--}-->
+                        <!--);-->
+
+                        <!--groupadmin.push(i);-->
+
+                        <!--last = group;-->
+                    <!--}-->
+                <!--});-->
+
+                <!--for (var k = 0; k < groupadmin.length; k++) {-->
+                    <!--// Code added for adding class to sibling elements as "group_<id>"-->
+                    <!--var regexp = new RegExp('group_\\d+');-->
+
+                    <!--var arr = $("#" + groupadmin[k]).nextUntil("#" + groupadmin[k + 1]);-->
+                    <!--for (var i = 0; i < arr.length; i++) {-->
+                        <!--arr[i].className = arr[i].className.replace(regexp, "");-->
+                    <!--}-->
+                    <!--$("#" + groupadmin[k]).nextUntil("#" + groupadmin[k + 1]).addClass(' group_' + groupadmin[k]);-->
+                    <!--// Code added for adding Toggle functionality for each group-->
+                    <!--$("#button_" + groupadmin[k]).off("click");-->
+                    <!--$("#button_" + groupadmin[k]).click(function () {-->
+                        <!--var gid = $(this).attr("id").substr(7);-->
+                        <!--console.log("id:" + $(this).attr("id").substr(7));-->
+                        <!--$(".group_" + gid).slideToggle(300);-->
+                    <!--});-->
+
+                <!--}-->
+            <!--},-->
+            <!--'paging': false-->
+        <!--});-->
+
+        <!--// Handle click on edit button-->
+        <!--$('#wbs_table tbody').on('click', 'button', function (e) {-->
+            <!--if ($(this).attr("id") !== "editWBS") {-->
+                <!--return;-->
+            <!--}-->
+            <!--var data = $(this).closest('tr');-->
+            <!--data[0].classList.add("editing");-->
+            <!--var wbsId = {};-->
+            <!--wbsId["id"] = data.find('td')[1].innerText;-->
+            <!--$.ajax({-->
+                <!--type: "GET",-->
+                <!--url: "/edit_wbs",-->
+                <!--data: wbsId,-->
+                <!--dataType: 'text',-->
+                <!--timeout: 600000,-->
+                <!--success: function (result) {-->
+                    <!--result = JSON.parse(result);-->
+                    <!--$("#wbsId")[0].value = result["id"];-->
+                    <!--$("#wbsName")[0].value = result["name"];-->
+                    <!--$("#wbsCode")[0].value = result["code"];-->
+                <!--},-->
+                <!--error: function (e) {-->
+                    <!--console.log("error: " + e.statusText);-->
+                    <!--data[0].classList.remove("editing");-->
+<!--//                            alert("fail");-->
+                <!--}-->
+            <!--})-->
+        <!--});-->
+
+        <!--// Handle click on checkbox-->
+        <!--$('#wbs_table tbody').on('click', 'input[type="checkbox"]', function (e) {-->
+            <!--var $row = $(this).closest('tr');-->
+
+            <!--// Get row data-->
+            <!--var data = table.row($row).data();-->
+
+            <!--// Get row ID-->
+            <!--var rowId = data[0];-->
+
+            <!--// Determine whether row ID is in the list of selected row IDs-->
+            <!--var index = $.inArray(rowId, rows_selected);-->
+
+            <!--// If checkbox is checked and row ID is not in list of selected row IDs-->
+            <!--if (this.checked && index === -1) {-->
+                <!--rows_selected.push(rowId);-->
+
+                <!--// Otherwise, if checkbox is not checked and row ID is in list of selected row IDs-->
+            <!--} else if (!this.checked && index !== -1) {-->
+                <!--rows_selected.splice(index, 1);-->
+            <!--}-->
+
+            <!--if (this.checked) {-->
+                <!--$row.addClass('selected');-->
+            <!--} else {-->
+                <!--$row.removeClass('selected');-->
+            <!--}-->
+
+            <!--// Update state of "Select all" control-->
+            <!--updateDataTableSelectAllCtrl(table);-->
+
+            <!--// Prevent click event from propagating to parent-->
+            <!--e.stopPropagation();-->
+        <!--});-->
+
+        <!--// Handle click on table cells with checkboxes-->
+        <!--$('#wbs_table').on('click', 'tbody td, thead th:first-child', function (e) {-->
+            <!--$(this).parent().find('input[type="checkbox"]').trigger('click');-->
+        <!--});-->
+
+        <!--// Handle click on "Select all" control-->
+        <!--$('thead input[name="select_all"]', table.table().container()).on('click', function (e) {-->
+            <!--if (this.checked) {-->
+                <!--$('#wbs_table tbody input[type="checkbox"]:not(:checked)').trigger('click');-->
+            <!--} else {-->
+                <!--$('#wbs_table tbody input[type="checkbox"]:checked').trigger('click');-->
+            <!--}-->
+
+            <!--// Prevent click event from propagating to parent-->
+            <!--e.stopPropagation();-->
+        <!--});-->
+
+        <!--// Handle table draw event-->
+        <!--table.on('draw', function () {-->
+            <!--// Update state of "Select all" control-->
+            <!--updateDataTableSelectAllCtrl(table);-->
+        <!--});-->
+    <!--}-->
+    <!--$(document).ready(function () {-->
+        <!--tableCreation();-->
+    <!--});-->
+
+    <!--/*]]>*/-->
+
+<!--</script>-->
+
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function() {
+
+        var api;
+        var json_data;
+        $.ajax({
+            url: "/get_wbs_list?id=5",
+            success: function (result) {
+                json_data = result;
+            }
+        });
+        var table = $('#tree').DataTable({
+            ajax: '/get_wbs_list?id=5',
+            columns: [
+                { data: null },
+                { data: "ttId" },
+                { data: "ttParentId" },
+                { data: "name" },
+                { data: "code" },
+                { data: null, defaultContent: "" }
+            ],
+            sAjaxDataProp : "",
+            pageLength: 5,
+            lengthMenu: [3, 5, 10, 25, 50],
+            ordering: false,
+            initComplete: function(settings, result) {
+                $.ajax({
+                    url: "/get_wbs_list?id=5",
+                    success: function (result) {
+                        json_data = result;
+                    }
+                });
+            },
+            treetable: {
+                expandable: true,
+                onNodeExpand: function() {
+                    var node = this;
+                    console.log(node)
+
+//                    $.getJSON('/get_wbs_list?id=5' + node.id + '.txt')
+//                        .done(function(json) {
+//                            table.treeTable.addChildren(node, json.data);
+//                        } )
+//                        .fail(function(e) {
+//                            console.log("error", e);
+//                        } )
+//                    ;
+
+                    var child_node = json_data.find(function(data){ return data.ttParentId == node.id });
+                    console.log(child_node);
+                    console.log(json_data);
+                    $.getJSON('/get_wbs_list?id=5')
+                        .done(function(json) {
+                            table.treeTable.addChildren(node, child_node);
+                        } )
+                        .fail(function(e) {
+                            console.log("error", e);
+                        } )
+                    ;
+
+                }
+            }
+        } );
+
+        $('#tree').on( 'draw.dt', function () {
+            json_data = $('#tree').DataTable().ajax.json();
+        } );
+
+    } );
+</script>
+</body>
+</html>

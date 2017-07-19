@@ -16,10 +16,10 @@ import java.util.stream.Collectors;
 
 @RestController
 public class EntityCreatorController {
-    UserServiceCrud userServiceCrud;
-    RoleService roleService;
-    ProjectService projectService;
-    WBSService wbsService;
+    private UserServiceCrud userServiceCrud;
+    private RoleService roleService;
+    private ProjectService projectService;
+    private WBSService wbsService;
 
     @Autowired
     public void setUserServiceCrud(UserServiceCrud userServiceCrud) {

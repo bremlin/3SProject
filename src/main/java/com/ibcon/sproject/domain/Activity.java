@@ -1,9 +1,8 @@
 package com.ibcon.sproject.domain;
 
-import com.ibcon.sproject.listeners.ActivityListener;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.Proxy;
 import org.joda.time.DateTime;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
@@ -40,6 +39,7 @@ public @Data class Activity extends AbstractDomainClass {
     @JoinColumn(name = "wbs_id")
 //    @JoinTable(name = "wbs", joinColumns = @JoinColumn(name = "id"),
 //        inverseJoinColumns = @JoinColumn(name = "wbs_id"))
+    @JsonBackReference
     private WBS wbs;
 
 

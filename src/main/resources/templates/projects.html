@@ -11,25 +11,26 @@
         <form th:action="@{/logout}" method="post">
             <div class="col-sm-10"><h2>Проекты</h2></div>
         </form>
-        <table class="table table-striped">
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>User rule</th>
-                <th>View</th>
-                <th sec:authorize="hasAuthority('ADMIN')">Edit</th>
-                <th sec:authorize="hasAuthority('ADMIN')">Delete</th>
-            </tr>
-            <tr th:each="project : ${projects}">
-                <td th:text="${project.projectName}">Project Name</td>
-                <td th:text="${project.projectDbName}">Project DB Name</td>
-                <td><p th:each="role : ${project.roles}" th:text="${role}"></p></td>
-                <td><a th:href="${'/project/' + project.id}">View</a> </td>
-                <td sec:authorize="hasAuthority('ADMIN')"><a th:href="${'/project/edit/' + project.id}">Edit</a> </td>
-                <td sec:authorize="hasAuthority('ADMIN')"><a th:href="${'/project/delete/' + project.id}">Delete</a> </td>
-            </tr>
-        </table>
-
+            <table class="table table-striped">
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>User rule</th>
+                    <th>View</th>
+                    <th sec:authorize="hasAuthority('ADMIN')">Edit</th>
+                    <th sec:authorize="hasAuthority('ADMIN')">Delete</th>
+                </tr>
+                <tr th:each="project : ${projects}">
+                    <div th:if="${#lists.containsAll(#authentication.getAuthorities(), project.authorities)}">
+                        <td th:text="${project.projectName}">Project Name</td>
+                        <td th:text="${project.projectDbName}">Project DB Name</td>
+                        <td><p th:each="role : ${project.roles}" th:text="${role}"></p></td>
+                        <td><a th:href="${'/project/' + project.id}">View</a> </td>
+                        <td sec:authorize="hasAuthority('ADMIN')"><a th:href="${'/project/edit/' + project.id}">Edit</a> </td>
+                        <td sec:authorize="hasAuthority('ADMIN')"><a th:href="${'/project/delete/' + project.id}">Delete</a> </td>
+                    </div>
+                </tr>
+            </table>
     </div>
 </div>
 </body>

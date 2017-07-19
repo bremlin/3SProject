@@ -1,5 +1,6 @@
 package com.ibcon.sproject.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -29,6 +30,7 @@ public class User extends AbstractDomainClass {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JsonManagedReference
     private Set<Role> roles = new HashSet<>();
 
     public User() {

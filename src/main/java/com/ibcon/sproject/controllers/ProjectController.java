@@ -1,5 +1,6 @@
 package com.ibcon.sproject.controllers;
 
+import com.ibcon.sproject.controllers.MainView.dto.ProjectDTO;
 import com.ibcon.sproject.creators.project.EmptyProjectFormCreatorImpl;
 import com.ibcon.sproject.creators.project.ProjectFormModelCreator;
 import com.ibcon.sproject.creators.project.ProjectFormModelCreatorImpl;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -34,7 +36,11 @@ public class ProjectController {
 
     @RequestMapping(value = "/projects", method = RequestMethod.GET)
     public String listAllProjects(Model model) {
-        model.addAttribute("projects", projectService.listAll());
+        //TODO где должно располагаться преобразование?
+        List<Project> projects = (List<Project>) projectService.listAll();
+        List<ProjectDTO> projectDTOs = new ArrayList<>();
+        projects.forEach(project -> projectDTOs.add(new ProjectDTO(project)));
+        model.addAttribute("projects", projectDTOs);
         return "projects";
     }
     @RequestMapping("project/new")

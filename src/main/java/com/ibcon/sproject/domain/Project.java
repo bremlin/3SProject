@@ -1,5 +1,6 @@
 package com.ibcon.sproject.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
@@ -24,9 +25,11 @@ public @Data class Project extends AbstractDomainClass {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "projects_roles", joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JsonManagedReference
     private Set<Role> roles = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.MERGE, mappedBy = "project")
+    @JsonManagedReference
     private Set<WBS> wbsSet = new HashSet<>();
 
     public void addRole(Role role) {
