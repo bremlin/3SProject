@@ -4,35 +4,277 @@
 
     <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
 
-    <link rel="stylesheet" type="text/css" href="../css/w2ui-1.5.rc1.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/w2ui-1.5.rc1.min.css"/>
     <script type="text/javascript" src="../js/w2ui-1.5.rc1.min.js"></script>
 </head>
 <body>
 
 <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
 
-<div id="grid" style="width: 100%; height: 250px;"></div>
+<!--TODO layouts-->
+<!--<div id="grid" style="width: 100%; height: 250px;"></div>-->
+<div id="main" style="width: 100%; height: 250px;"></div>
+
 </body>
 <script>
-    $(function () {
-        $('#grid').w2grid({
+    /*<![CDATA[*/
+
+    var config = {
+        layout: {
+            name: 'layout',
+            padding: 5,
+            panels: [
+                {type: 'left', size: '50%', /*resizable: true,*/ minSize: 300},
+                {type: 'right', size: '50%', /*resizable: true,*/ minSize: 300}
+            ]
+        },
+        activities: {
             name: 'grid',
-            header: 'List of Names',
+//            url  : {
+//                get: '/get_wbs_list?id=5',
+//                remove:
+//                add:
+//            },
+            show: {
+                selectColumn: true,
+                toolbar: true,
+                toolbarDelete: true,
+                toolbarEdit: true,
+                footer: true
+            },
+            onEdit: function (event) {
+                var editConfigPopup = {};
+                Object.assign(editConfigPopup, config.wbsPopup);
+                var editConfigForm = {};
+                Object.assign(editConfigForm, config.wbsForm);
+
+                editConfigPopup.title = 'Edit WBS';
+
+                var sel = this.getSelection();
+                console.log('sel:' +  sel);
+                if (sel.length === 1) {
+                    //TODO edit
+                    var form = $().w2form(editConfigForm);
+                    form.record.wbsId = this.get(sel[0]).id;
+                    form.record.wbsName = this.get(sel[0]).name;
+                    form.record.wbsCode = this.get(sel[0]).code;
+                } else {
+                    $().w2form(editConfigForm);
+                }
+
+                $().w2popup('open', editConfigPopup);
+//                w2alert('edit');
+            },
+            onDelete: function (event) {
+                console.log('delete has default behavior');
+            },
+            multiselect: true,
+            multiSearch: true,
+            searches: [
+                { field: 'id', caption: 'Id', type: 'int' },
+                { field: 'parentId', caption: 'Parent Id', type: 'int' },
+                { field: 'type', caption: 'type', type: 'list', options: { items: ['wbs', 'act']} },
+                { field: 'name', caption: 'Name', type: 'text' },
+                { field: 'code', caption: 'Code', type: 'text' },
+                { field: 'cost', caption: 'Cost', type: 'float' }
+            ],
+            toolbar: {
+                items: [
+                    {type: 'break'},
+                    {type: 'button', id: 'addWbsButton', caption: 'Add wbs', img: 'w2ui-icon-plus'},
+                ],
+                onClick: function (target, data) {
+                    if (target === 'addWbsButton') {
+                        addWbsPopup();
+                    }
+                },
+                onRefresh: function () {
+                    this.remove("w2ui-reload");
+                }
+            },
+            recid: 'id',
             columns: [
-                { field: 'fname', caption: 'First Name', size: '30%' },
-                { field: 'lname', caption: 'Last Name', size: '30%' },
-                { field: 'email', caption: 'Email', size: '40%' },
-                { field: 'sdate', caption: 'Start Date', size: '120px' }
+                {field: 'id', caption: 'Id', size: '10%', sortable: true},
+                {field: 'type', caption: 'Type', size: '0%', hidden: true},
+                {field: 'parentId', caption: 'Parent Id', size: '10%', sortable: true},
+                {field: 'name', caption: 'Name', size: '35%', sortable: true},
+                {field: 'code', caption: 'Code', size: '35%', sortable: true},
+                {field: 'cost', caption: 'Cost', size: '10%', sortable: true}
+            ],
+            onReload: function (event) {
+                this.load('/get_wbs_list?id=5');
+            }
+        },
+        smet: {
+            name: 'smet',
+            show: {
+                selectColumn: true,
+                toolbar: true,
+                footer: true
+            },
+            multiselect: true,
+            toolbar: {
+                items: [
+                    {type: 'break'}
+                ],
+                onClick: function (target, data) {
+                    console.log(target);
+                },
+                onRefresh: function () {
+                    this.remove("w2ui-reload");
+                }
+            },
+            recid: 'id',
+            columns: [
+                {field: 'id', caption: 'Id', size: '10%', sortable: true},
+                {field: 'name', caption: 'Name', size: '90%', sortable: true}
             ],
             records: [
-                { recid: 1, fname: "Peter", lname: "Jeremia", email: 'peter@mail.com', sdate: '2/1/2010' },
-                { recid: 2, fname: "Bruce", lname: "Wilkerson", email: 'bruce@mail.com', sdate: '6/1/2010' },
-                { recid: 3, fname: "John", lname: "McAlister", email: 'john@mail.com', sdate: '1/16/2010' },
-                { recid: 4, fname: "Ravi", lname: "Zacharies", email: 'ravi@mail.com', sdate: '3/13/2007' },
-                { recid: 5, fname: "William", lname: "Dembski", email: 'will@mail.com', sdate: '9/30/2011' },
-                { recid: 6, fname: "David", lname: "Peterson", email: 'david@mail.com', sdate: '4/5/2010' }
-            ]
+                {id: 1, name: 'test_smet1'},
+                {id: 2, name: 'test_smet2'}
+            ],
+            onReload: function (event) {
+//                this.load('/');
+            }
+
+        },
+        wbsForm: {
+            name: 'addWbsForm',
+            style: 'border: 0px; background-color: transparent;',
+            formHTML: '<div role="form" class="w2ui-page page-0">' +
+            '    <div class="w2ui-field">' +
+            '        <label class="hidden">Id:</label>' +
+            '        <div class="hidden">' +
+            '           <input name="wbsId" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    <div class="w2ui-field">' +
+            '        <label>Название WBS:</label>' +
+            '        <div>' +
+            '           <input name="wbsName" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    </div>' +
+            '    <div class="w2ui-field">' +
+            '        <label>Код WBS:</label>' +
+            '        <div>' +
+            '            <input name="wbsCode" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    </div>' +
+            '</div>' +
+            '<div class="w2ui-buttons">' +
+            '    <button class="w2ui-btn" name="reset">Reset</button>' +
+            '    <button class="w2ui-btn" id="saveWbs" name="save">Save</button>' +
+            '</div>' +
+            '</div>',
+            fields: [
+                {field: 'wbsId', type: 'text', required: false},
+                {field: 'wbsName', type: 'text', required: true},
+                {field: 'wbsCode', type: 'text', required: true}
+            ],
+            actions: {
+                "save": function () {
+                    var addWbsForm = this;
+                    addWbsForm.validate();
+
+                    var wbs = {};
+//        wbs["projectId"] = document.URL.substr(document.URL.lastIndexOf('/') + 1);
+                    wbs["projectId"] = 5;
+                    wbs["id"] = $("#wbsId").val();
+                    wbs["name"] = $("#wbsName").val();
+                    wbs["code"] = $("#wbsCode").val();
+                    $.ajax({
+                        type: "POST",
+                        contentType: "application/json",
+                        url: "/add_wbs",
+                        data: JSON.stringify(wbs),
+                        timeout: 600000,
+                        success: function (result) {
+                            addWbsForm.clear();
+                            w2popup.close();
+
+                            reloadWithPosition();
+                        },
+                        error: function (e) {
+
+                        }
+                    });
+                },
+                "reset": function () {
+                    this.clear();
+                }
+            }
+        },
+        wbsPopup: {
+            title: 'Add WBS',
+            body: '<div id="form" style="width: 100%; height: 100%;"></div>',
+            style: 'padding: 15px 0px 0px 0px',
+            width: 750,
+            height: 300,
+            showMax: true,
+            onToggle: function (event) {
+                $(w2ui.addWbsForm.box).hide();
+                event.onComplete = function () {
+                    $(w2ui.addWbsForm.box).show();
+                    w2ui.addWbsForm.resize();
+                }
+            },
+            onOpen: function (event) {
+                event.onComplete = function () {
+                    // specifying an onOpen handler instead is equivalent to specifying an onBeforeOpen handler, which would make this code execute too early and hence not deliver.
+                    $('#w2ui-popup #form').w2render('addWbsForm');
+                }
+            }
+        }
+    };
+
+    function addWbsPopup() {
+//        if (!w2ui.addWbsForm) {
+            $().w2form(config.wbsForm);
+            $().w2popup('open', config.wbsPopup);
+//        }
+    }
+
+    function reloadWithPosition() {
+        var st = w2ui['grid'].last.scrollTop;
+        var expanded = $('.w2ui-expanded');
+        var expanded_ids = [];
+        for (var i = 0; i < expanded.length; i++) {
+            var id = expanded[i].outerText.split('\n')[0];
+            if (id !== "") {
+                expanded_ids.push(id);
+            }
+        }
+
+        w2ui['grid'].load('/get_wbs_list?id=5', function () {
+            for (var idx in expanded_ids) {
+                console.log(expanded_ids[idx]);
+                w2ui['grid'].expand(expanded_ids[idx]);
+            }
+            w2ui['grid'].last.scrollTop = st;
+
+            w2ui['grid'].refresh();
         });
+    }
+
+    //TODO id wbs и activity могут пересекаться, из-за этого будут сворачивать и разворачиваться несколько строк
+    //TODO разница в количестве рекордс? неправильный джсон?
+    $(function () {
+        //w2ui['grid'].load('/get_wbs_list?id=5');
+        //w2utils.settings.dataType = 'JSON'
+        $.ajax({
+            url: '/get_wbs_list?id=5',
+            method: 'GET',
+            success: function (result) {
+                config.activities.records = result;
+                $('#main').w2layout(config.layout);
+                w2ui.layout.content('left', $().w2grid(config.activities));
+                w2ui.layout.content('right', $().w2grid(config.smet));
+//                $('#grid').w2grid(config.activities);
+            }
+        });
+
+
     });
+
+    /*]]>*/
 </script>
 </html>
