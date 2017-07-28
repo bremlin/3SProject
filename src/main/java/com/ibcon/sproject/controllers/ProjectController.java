@@ -1,6 +1,6 @@
 package com.ibcon.sproject.controllers;
 
-import com.ibcon.sproject.controllers.MainView.dto.ProjectDTO;
+import com.ibcon.sproject.controllers.mainview.dto.ProjectDTO;
 import com.ibcon.sproject.creators.project.EmptyProjectFormCreatorImpl;
 import com.ibcon.sproject.creators.project.ProjectFormModelCreator;
 import com.ibcon.sproject.creators.project.ProjectFormModelCreatorImpl;

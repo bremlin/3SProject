@@ -13,7 +13,7 @@
 
 <!--TODO layouts-->
 <!--<div id="grid" style="width: 100%; height: 250px;"></div>-->
-<div id="main" style="width: 100%; height: 250px;"></div>
+<div id="main" style="width: 100%; height: 500px;"></div>
 
 </body>
 <script>
@@ -26,6 +26,14 @@
             panels: [
                 {type: 'left', size: '50%', /*resizable: true,*/ minSize: 300},
                 {type: 'right', size: '50%', /*resizable: true,*/ minSize: 300}
+            ]
+        },
+        actLayout: {
+            name: 'actLayout',
+            padding: 5,
+            panels: [
+                { type: 'top', size: '80%' },
+                { type: 'left', size: '100%' }
             ]
         },
         activities: {
@@ -43,49 +51,57 @@
                 footer: true
             },
             onEdit: function (event) {
-                var editConfigPopup = {};
-                Object.assign(editConfigPopup, config.wbsPopup);
-                var editConfigForm = {};
-                Object.assign(editConfigForm, config.wbsForm);
-
-                editConfigPopup.title = 'Edit WBS';
-
                 var sel = this.getSelection();
-                console.log('sel:' +  sel);
                 if (sel.length === 1) {
-                    //TODO edit
-                    var form = $().w2form(editConfigForm);
-                    form.record.wbsId = this.get(sel[0]).id;
-                    form.record.wbsName = this.get(sel[0]).name;
-                    form.record.wbsCode = this.get(sel[0]).code;
-                } else {
-                    $().w2form(editConfigForm);
+                    if (this.get(sel[0]).type === 'wbs') {
+                        editWbsPopup(this);
+                    } else if (this.get(sel[0]).type === 'act') {
+                        editActPopup(this);
+                    }
                 }
-
-                $().w2popup('open', editConfigPopup);
-//                w2alert('edit');
             },
             onDelete: function (event) {
-                console.log('delete has default behavior');
+                if (event.force === true) {
+                    console.log(event);
+                    var sel = this.getSelection();
+                    if (sel.length > 0) {
+                        var data = {};
+                        data.idList = [];
+                        for (var idx in sel) {
+                            data.idList.push(sel[idx]);
+                        }
+//                        data.id = this.get(sel[0]).id;
+                        $.ajax({
+                            type: "POST",
+                            contentType: "application/json",
+                            url: "/delete_wbs",
+                            data: JSON.stringify(data)
+                        });
+                    }
+                    console.log('ended');
+                }
             },
             multiselect: true,
             multiSearch: true,
             searches: [
-                { field: 'id', caption: 'Id', type: 'int' },
-                { field: 'parentId', caption: 'Parent Id', type: 'int' },
-                { field: 'type', caption: 'type', type: 'list', options: { items: ['wbs', 'act']} },
-                { field: 'name', caption: 'Name', type: 'text' },
-                { field: 'code', caption: 'Code', type: 'text' },
-                { field: 'cost', caption: 'Cost', type: 'float' }
+                {field: 'id', caption: 'Id', type: 'int'},
+                {field: 'parentId', caption: 'Parent Id', type: 'int'},
+                {field: 'type', caption: 'type', type: 'list', options: {items: ['wbs', 'act']}},
+                {field: 'name', caption: 'Name', type: 'text'},
+                {field: 'code', caption: 'Code', type: 'text'},
+                {field: 'cost', caption: 'Cost', type: 'float'}
             ],
             toolbar: {
                 items: [
                     {type: 'break'},
                     {type: 'button', id: 'addWbsButton', caption: 'Add wbs', img: 'w2ui-icon-plus'},
+                    {type: 'button', id: 'addActButton', caption: 'Add activity', img: 'w2ui-icon-plus'}
                 ],
                 onClick: function (target, data) {
                     if (target === 'addWbsButton') {
                         addWbsPopup();
+                    } else if (target === 'addActButton') {
+                        addActPopup();
                     }
                 },
                 onRefresh: function () {
@@ -103,6 +119,9 @@
             ],
             onReload: function (event) {
                 this.load('/get_wbs_list?id=5');
+            },
+            onClick: function (event) {
+                w2alert(this.get(event.recid).name);
             }
         },
         smet: {
@@ -211,6 +230,7 @@
             height: 300,
             showMax: true,
             onToggle: function (event) {
+                console.log(event);
                 $(w2ui.addWbsForm.box).hide();
                 event.onComplete = function () {
                     $(w2ui.addWbsForm.box).show();
@@ -218,9 +238,105 @@
                 }
             },
             onOpen: function (event) {
+                console.log(event);
                 event.onComplete = function () {
                     // specifying an onOpen handler instead is equivalent to specifying an onBeforeOpen handler, which would make this code execute too early and hence not deliver.
                     $('#w2ui-popup #form').w2render('addWbsForm');
+                }
+            }
+        },
+        actForm: {
+            name: 'actForm',
+            style: 'border: 0px; background-color: transparent;',
+            formHTML:
+            //TODO align="center"
+            '<div role="form" class="w2ui-page page-0">' +
+            '    <div class="w2ui-field">' +
+            '        <label>Id:</label>' +
+            '        <div>' +
+            '           <input name="actId" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    </div>' +
+            '    <div class="w2ui-field">' +
+            '        <label>WBS Id:</label>' +
+            '        <div>' +
+            '           <input name="wbsId" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    </div>' +
+            '    <div class="w2ui-field">' +
+            '        <label>Название работы:</label>' +
+            '        <div>' +
+            '           <input name="actName" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    </div>' +
+            '    <div class="w2ui-field">' +
+            '        <label>Стоимость работы:</label>' +
+            '        <div>' +
+            '            <input name="actCost" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    </div>' +
+            '</div>' +
+            '<div class="w2ui-buttons">' +
+            '    <button class="w2ui-btn" name="reset">Reset</button>' +
+            '    <button class="w2ui-btn" id="saveWbs" name="save">Save</button>' +
+            '</div>',
+            fields: [
+                {field: 'actId', type: 'text', required: false, hidden: true},
+                {field: 'wbsId', type: 'text', required: true},
+                {field: 'actName', type: 'text', required: true},
+                {field: 'actCost', type: 'text', required: true, render: 'money'}
+            ],
+            actions: {
+                "save": function () {
+                    var actForm = this;
+                    actForm.validate();
+
+                    var act = {};
+//        wbs["projectId"] = document.URL.substr(document.URL.lastIndexOf('/') + 1);
+                    act["actId"] = $("#actId").val();
+                    act["wbsId"] = $("#wbsId").val();
+                    act["name"] = $("#actName").val();
+                    act["cost"] = $("#actCost").val();
+                    $.ajax({
+                        type: "POST",
+                        contentType: "application/json",
+                        url: "/add_act",
+                        data: JSON.stringify(act),
+                        timeout: 600000,
+                        success: function (result) {
+                            actForm.clear();
+                            w2popup.close();
+
+                            reloadWithPosition();
+                        },
+                        error: function (e) {
+
+                        }
+                    });
+                },
+                "reset": function () {
+                    this.clear();
+                }
+            }
+        },
+        actPopup: {
+            title: 'Add activity',
+            body: '<div id="actForm" style="width: 100%; height: 100%;"></div>',
+            style: 'padding: 15px 0px 0px 0px',
+            width: 750,
+            height: 300,
+            showMax: true,
+            onToggle: function (event) {
+                $(w2ui.actForm.box).hide();
+                event.onComplete = function () {
+                    $(w2ui.actForm.box).show();
+                    w2ui.actForm.resize();
+                }
+            },
+            onOpen: function (event) {
+                event.onComplete = function () {
+                    // specifying an onOpen handler instead is equivalent to specifying an onBeforeOpen handler, which would make this code execute too early and hence not deliver.
+                    $('#w2ui-popup #actForm').w2render('actForm');
                 }
             }
         }
@@ -228,9 +344,43 @@
 
     function addWbsPopup() {
 //        if (!w2ui.addWbsForm) {
-            $().w2form(config.wbsForm);
-            $().w2popup('open', config.wbsPopup);
+        $().w2form(config.wbsForm);
+        $().w2popup('open', config.wbsPopup);
 //        }
+    }
+
+    function editWbsPopup(grid) {
+        var sel = grid.getSelection();
+        var record = grid.get(sel[0]);
+
+        if (!w2ui.addWbsForm) {
+            $().w2form(config.wbsForm);
+        }
+
+        w2ui.addWbsForm.record.wbsId = record.id;
+        w2ui.addWbsForm.record.wbsName = record.name;
+        w2ui.addWbsForm.record.wbsCode = record.code;
+        $().w2popup('open', config.wbsPopup);
+    }
+
+    function addActPopup() {
+        $().w2form(config.actForm);
+        $().w2popup('open', config.actPopup);
+    }
+
+    function editActPopup(grid) {
+        var sel = grid.getSelection();
+        var record = grid.get(sel[0]);
+
+        if (!w2ui.actForm) {
+            $().w2form(config.actForm);
+        }
+
+        w2ui.actForm.record.actId = record.id.substr(1);
+        w2ui.actForm.record.wbsId = record.w2ui.parent_recid;
+        w2ui.actForm.record.actName = record.name;
+        w2ui.actForm.record.actCost = record.cost;
+        $().w2popup('open', config.actPopup);
     }
 
     function reloadWithPosition() {
@@ -266,7 +416,10 @@
             success: function (result) {
                 config.activities.records = result;
                 $('#main').w2layout(config.layout);
-                w2ui.layout.content('left', $().w2grid(config.activities));
+//                var actLayout = $().w2layout(config.actLayout);
+                w2ui.layout.content('left', $().w2layout(config.actLayout));
+                w2ui.actLayout.content('top', $().w2grid(config.activities));
+//                actLayout.content('left', $().w2grid(config.activities));
                 w2ui.layout.content('right', $().w2grid(config.smet));
 //                $('#grid').w2grid(config.activities);
             }
