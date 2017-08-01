@@ -42,6 +42,13 @@ public @Data class Activity extends AbstractDomainClass {
     @JsonBackReference
     private WBS wbs;
 
+//    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+//    @JoinColumn(name = "project_id")
+////    @JoinTable(name = "wbs", joinColumns = @JoinColumn(name = "id"),
+////        inverseJoinColumns = @JoinColumn(name = "wbs_id"))
+//    @JsonBackReference
+//    private Project project;
+
 
     public void setPercentageCompletion(Integer percentageCompletion) {
         if (percentageCompletion < 0 && percentageCompletion > 100) {

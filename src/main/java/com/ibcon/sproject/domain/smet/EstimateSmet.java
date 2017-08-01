@@ -83,4 +83,7 @@ class EstimateSmet extends AbstractDomainClass {
             inverseJoinColumns = @JoinColumn(name = "wbs_id"))
     @JsonBackReference
     private Set<WBS> wbsSet = new HashSet<>();
+
+    @OneToMany(mappedBy = "smet")
+    private Set<EstimateSmr> smrSet = new HashSet<>();
 }

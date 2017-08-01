@@ -1,4 +1,4 @@
-package com.ibcon.sproject.controllers.MainView.dto;
+package com.ibcon.sproject.controllers.mainview.dto;
 
 import com.ibcon.sproject.domain.*;
 import lombok.Data;

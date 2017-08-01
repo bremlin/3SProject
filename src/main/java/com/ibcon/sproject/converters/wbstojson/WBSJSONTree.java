@@ -22,7 +22,7 @@ public class WBSJSONTree {
     public List<WBSJson> convertProjectWBSList(Integer projectId) {
         List<WBS> wbsList = wbsService.findByProjectId(projectId);
         List<WBSJson> wbsJsonList = new ArrayList<>();
-        wbsList.forEach(wbs -> wbsJsonList.add(new WBSJson(wbs)));
+        wbsList.stream().filter(wbs -> wbs.getParentId() == 0).forEach(wbs -> wbsJsonList.add(new WBSJson(wbs)));
         return wbsJsonList;
     }
 }

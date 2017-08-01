@@ -1,9 +1,7 @@
-package com.ibcon.sproject.controllers.MainView;
+package com.ibcon.sproject.controllers.mainview;
 
-import com.ibcon.sproject.controllers.MainView.dto.WBS;
 import com.ibcon.sproject.services.crud.wbs.WBSService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
