@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class EstimateSmrImpl implements EstimateSmrService {
+public class EstimateSmrServiceImpl implements EstimateSmrService {
 
     private EstimateSmrRepository estimateSmrRepository;
 
@@ -38,5 +38,25 @@ public class EstimateSmrImpl implements EstimateSmrService {
     @Override
     public void delete(Integer id) {
         estimateSmrRepository.delete(id);
+    }
+
+    @Override
+    public List<EstimateSmr> findAllBySmetId(Integer smetId) {
+        return estimateSmrRepository.findAllBySmetId(smetId);
+    }
+
+    @Override
+    public List<EstimateSmr> findAllByChapterIdAndHeaderId(Integer chapterId, Integer headerId) {
+        return estimateSmrRepository.findAllByChapterIdAndHeaderId(chapterId, headerId);
+    }
+
+    @Override
+    public List<EstimateSmr> findAllByChapterId(Integer chapterId) {
+        return estimateSmrRepository.findAllByChapterId(chapterId);
+    }
+
+    @Override
+    public List<EstimateSmr> findAllByHeaderId(Integer headerId) {
+        return estimateSmrRepository.findAllByHeaderId(headerId);
     }
 }

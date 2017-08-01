@@ -6,5 +6,5 @@ import com.ibcon.sproject.services.crud.CrudService;
 import java.util.List;
 
 public interface LinkService extends CrudService<Link> {
-    public List<Link> findAllByActivityId(Integer activityId);
+    List<Link> findAllByActivityId(Integer activityId);
 }

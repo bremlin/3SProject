@@ -65,6 +65,8 @@ class EstimateSmet extends AbstractDomainClass {
     @Column(name = "tzm", columnDefinition = "decimal")
     private BigDecimal tzm;
 
+    @OneToMany(mappedBy = "smet")
+    private Set<EstimateChapter> chapters;
 
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_create")

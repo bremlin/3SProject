@@ -24,6 +24,9 @@ public @Data class EstimateSmr extends AbstractDomainClass {
 
     private String units;
 
+    @Column(name = "quantity", columnDefinition = "decimal")
+    private BigDecimal quantity;
+
     @Column(name = "oz", columnDefinition = "decimal")
     private BigDecimal oz;
 

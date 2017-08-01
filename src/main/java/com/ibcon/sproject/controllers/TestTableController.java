@@ -4,11 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.ibcon.sproject.converters.smettojson.SmetJsonTree;
+import com.ibcon.sproject.converters.smettojson.SmetTypeJson;
 import com.ibcon.sproject.converters.wbstojson.WBSJson;
 import com.ibcon.sproject.converters.wbstojson.WBSJSONTree;
 import com.ibcon.sproject.domain.WBS;
 import com.ibcon.sproject.domain.mixins.WBSInnerObjectsMixin;
 import com.ibcon.sproject.services.crud.activity.ActivityService;
+import com.ibcon.sproject.services.crud.estimatesmet.EstimateSmetService;
 import com.ibcon.sproject.services.crud.project.ProjectService;
 import com.ibcon.sproject.services.crud.role.RoleService;
 import com.ibcon.sproject.services.crud.user.UserServiceCrud;
@@ -29,8 +32,10 @@ public class TestTableController {
     private ProjectService projectService;
     private WBSService wbsService;
     private ActivityService activityService;
+    private EstimateSmetService estimateSmetService;
 
     private WBSJSONTree wbsJsonTree;
+    private SmetJsonTree smetJsonTree;
 
     @Autowired
     public void setUserServiceCrud(UserServiceCrud userServiceCrud) {
@@ -58,8 +63,18 @@ public class TestTableController {
     }
 
     @Autowired
+    public void setEstimateSmetService(EstimateSmetService estimateSmetService) {
+        this.estimateSmetService = estimateSmetService;
+    }
+
+    @Autowired
     public void setWBSJSONTree(WBSJSONTree wbsJsonTree) {
         this.wbsJsonTree = wbsJsonTree;
+    }
+
+    @Autowired
+    public void setSmetJsonTree(SmetJsonTree smetJsonTree) {
+        this.smetJsonTree = smetJsonTree;
     }
 
     @GetMapping(value = "/get_project", produces = "application/json")
@@ -86,6 +101,21 @@ public class TestTableController {
         mapper.addMixIn(Object.class, WBSInnerObjectsMixin.class);
 
         String result = mapper.writeValueAsString(wbsJsonList);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/get_smet", produces = "application/json")
+    public ResponseEntity<?> getSmet(@RequestParam("id") String id) throws JsonProcessingException {
+        //TODO replace hardcoded values with tests
+        List<SmetTypeJson> smetTypeJsonList = smetJsonTree.convertSmetToJson(1);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        mapper.registerModule(new JodaModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        String result = mapper.writeValueAsString(smetTypeJsonList);
 
         return ResponseEntity.ok(result);
     }

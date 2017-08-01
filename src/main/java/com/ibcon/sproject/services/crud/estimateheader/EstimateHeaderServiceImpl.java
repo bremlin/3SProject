@@ -39,4 +39,9 @@ public class EstimateHeaderServiceImpl implements EstimateHeaderService {
     public void delete(Integer id) {
         estimateHeaderRepository.delete(id);
     }
+
+    @Override
+    public List<EstimateHeader> findAllBySmetId(Integer smetId) {
+        return estimateHeaderRepository.findAllBySmetId(smetId);
+    }
 }

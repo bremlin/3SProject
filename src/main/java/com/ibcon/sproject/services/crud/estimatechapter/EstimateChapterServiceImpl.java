@@ -39,4 +39,9 @@ public class EstimateChapterServiceImpl implements EstimateChapterService {
     public void delete(Integer id) {
         estimateChapterRepository.delete(id);
     }
+
+    @Override
+    public List<EstimateChapter> findAllBySmetId(Integer smetId) {
+        return estimateChapterRepository.findAllBySmetId(smetId);
+    }
 }
