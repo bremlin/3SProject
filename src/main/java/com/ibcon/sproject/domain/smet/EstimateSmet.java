@@ -17,7 +17,7 @@ import java.util.Set;
 @EntityScan
 @Entity
 @Table(name = "estimate_Smet")
-@EqualsAndHashCode(exclude = {"userCreated", "userChanged", "region"})
+@EqualsAndHashCode(exclude = {"userCreated", "userChanged", "region", "wbsSet", "smrSet"})
 public @Data
 class EstimateSmet extends AbstractDomainClass {
     private String name;
@@ -68,15 +68,18 @@ class EstimateSmet extends AbstractDomainClass {
     @OneToMany(mappedBy = "smet")
     private Set<EstimateChapter> chapters;
 
-    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "smet")
+    private Set<EstimateHeader> headers;
+
+    @OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_create")
     private User userCreated;
 
-    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_change")
     private User userChanged;
 
-    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "region_id")
     private EstimateRegion region;
 

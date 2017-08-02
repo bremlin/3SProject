@@ -24,8 +24,8 @@
             name: 'layout',
             padding: 5,
             panels: [
-                {type: 'left', size: '50%', /*resizable: true,*/ minSize: 300},
-                {type: 'right', size: '50%', /*resizable: true,*/ minSize: 300}
+                {type: 'left', size: '35%'/*, resizable: true, minSize: 300*/},
+                {type: 'right', size: '65%'/*, resizable: true, minSize: 300*/}
             ]
         },
         actLayout: {
@@ -38,11 +38,6 @@
         },
         activities: {
             name: 'grid',
-//            url  : {
-//                get: '/get_wbs_list?id=5',
-//                remove:
-//                add:
-//            },
             show: {
                 selectColumn: true,
                 toolbar: true,
@@ -121,7 +116,7 @@
                 this.load('/get_wbs_list?id=5');
             },
             onClick: function (event) {
-                w2alert(this.get(event.recid).name);
+//                w2alert(this.get(event.recid).name);
             }
         },
         smet: {
@@ -145,17 +140,46 @@
             },
             recid: 'id',
             columns: [
-                {field: 'id', caption: 'Id', size: '10%', sortable: true},
-                {field: 'name', caption: 'Name', size: '90%', sortable: true}
-            ],
-            records: [
-                {id: 1, name: 'test_smet1'},
-                {id: 2, name: 'test_smet2'}
+                {field: 'id', caption: 'Id', size: '4%', sortable: true},
+                {field: 'parentId', caption: 'Parent Id', hidden: true, sortable: true},
+                {field: 'type', caption: 'Type', hidden: true, sortable: true},
+                {field: 'name', caption: 'Name', size: '4%', sortable: true},
+                {field: 'num', caption: 'Num', size: '4%', sortable: true},
+                {field: 'isVirtual', caption: 'Is Virtual', hidden: true, sortable: true},
+                {field: 'comment', caption: 'Comment', hidden: true, sortable: true},
+                {field: 'status', caption: 'Status', hidden: true, sortable: true},
+                {field: 'dateCreated', caption: 'Date Created', hidden: true, sortable: true},
+                {field: 'dateChanged', caption: 'Date Changed', hidden: true, sortable: true},
+                {field: 'userCreated', caption: 'User Created', hidden: true, sortable: true},
+                {field: 'userChanged', caption: 'User Changed', hidden: true, sortable: true},
+                {field: 'region', caption: 'Region', hidden: true, sortable: true},
+                {field: 'code', caption: 'Code', hidden: true, sortable: true},
+                {field: 'units', caption: 'Units', size: '4%', sortable: true},
+                {field: 'quantity', caption: 'Quantity', size: '4%', sortable: true},
+                {field: 'oz', caption: 'Oz', size: '4%', sortable: true},
+                {field: 'em', caption: 'em', size: '4%', sortable: true},
+                {field: 'zm', caption: 'zm', size: '4%', sortable: true},
+                {field: 'mt', caption: 'mt', size: '4%', sortable: true},
+                {field: 'pz', caption: 'pz', size: '4%', sortable: true},
+                {field: 'nr', caption: 'nr', size: '4%', sortable: true},
+                {field: 'sp', caption: 'sp', size: '4%', sortable: true},
+                {field: 'sum', caption: 'sum', size: '4%', sortable: true},
+                {field: 'tzr', caption: 'tzr', size: '4%', sortable: true},
+                {field: 'tzm', caption: 'tzm', size: '4%', sortable: true},
+                {field: 'ozCost', caption: 'ozCost', size: '4%', sortable: true},
+                {field: 'emCost', caption: 'emCost', size: '4%', sortable: true},
+                {field: 'zmCost', caption: 'zmCost', size: '4%', sortable: true},
+                {field: 'mtCost', caption: 'mtCost', size: '4%', sortable: true},
+                {field: 'pzCost', caption: 'pzCost', size: '4%', sortable: true},
+                {field: 'nrCost', caption: 'nrCost', size: '4%', sortable: true},
+                {field: 'spCost', caption: 'spCost', size: '4%', sortable: true},
+                {field: 'tzrCost', caption: 'tzrCost', size: '4%', sortable: true},
+                {field: 'tzmCost', caption: 'tzmCost', size: '4%', sortable: true}
+
             ],
             onReload: function (event) {
-//                this.load('/');
+                this.load('/get_smet?id=1');
             }
-
         },
         wbsForm: {
             name: 'addWbsForm',
@@ -408,24 +432,25 @@
     //TODO id wbs и activity могут пересекаться, из-за этого будут сворачивать и разворачиваться несколько строк
     //TODO разница в количестве рекордс? неправильный джсон?
     $(function () {
-        //w2ui['grid'].load('/get_wbs_list?id=5');
-        //w2utils.settings.dataType = 'JSON'
         $.ajax({
             url: '/get_wbs_list?id=5',
             method: 'GET',
             success: function (result) {
                 config.activities.records = result;
                 $('#main').w2layout(config.layout);
-//                var actLayout = $().w2layout(config.actLayout);
                 w2ui.layout.content('left', $().w2layout(config.actLayout));
                 w2ui.actLayout.content('top', $().w2grid(config.activities));
-//                actLayout.content('left', $().w2grid(config.activities));
-                w2ui.layout.content('right', $().w2grid(config.smet));
-//                $('#grid').w2grid(config.activities);
             }
         });
 
-
+        $.ajax({
+            url: '/get_smet?id=1',
+            method: 'GET',
+            success: function (result) {
+                config.smet.records = result;
+                w2ui.layout.content('right', $().w2grid(config.smet));
+            }
+        });
     });
 
     /*]]>*/

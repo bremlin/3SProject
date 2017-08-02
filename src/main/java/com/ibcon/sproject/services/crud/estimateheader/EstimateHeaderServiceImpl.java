@@ -1,6 +1,7 @@
 package com.ibcon.sproject.services.crud.estimateheader;
 
 import com.ibcon.sproject.domain.smet.EstimateHeader;
+import com.ibcon.sproject.domain.smet.EstimateSmet;
 import com.ibcon.sproject.repositories.EstimateHeaderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,5 +44,10 @@ public class EstimateHeaderServiceImpl implements EstimateHeaderService {
     @Override
     public List<EstimateHeader> findAllBySmetId(Integer smetId) {
         return estimateHeaderRepository.findAllBySmetId(smetId);
+    }
+
+    @Override
+    public List<EstimateHeader> findAllBySmet(EstimateSmet smet) {
+        return estimateHeaderRepository.findAllBySmet(smet);
     }
 }

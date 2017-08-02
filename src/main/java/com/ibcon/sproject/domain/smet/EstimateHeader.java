@@ -3,6 +3,8 @@ package com.ibcon.sproject.domain.smet;
 import com.ibcon.sproject.domain.AbstractDomainClass;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import javax.persistence.*;
@@ -21,5 +23,5 @@ public @Data class EstimateHeader extends AbstractDomainClass {
 
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "chapter_id")
-    private EstimateSmet chapter;
+    private EstimateChapter chapter;
 }

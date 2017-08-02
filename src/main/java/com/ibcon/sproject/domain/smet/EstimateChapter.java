@@ -6,16 +6,21 @@ import lombok.EqualsAndHashCode;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @EntityScan
 @Entity
 @Table(name = "estimate_Chapter")
 @EqualsAndHashCode(exclude = {"smet"})
-public @Data class EstimateChapter extends AbstractDomainClass {
+public @Data
+class EstimateChapter extends AbstractDomainClass {
     private String name;
     private String num;
 
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "smet_id")
     private EstimateSmet smet;
+
+    @OneToMany(mappedBy = "chapter")
+    private Set<EstimateHeader> headerSet;
 }

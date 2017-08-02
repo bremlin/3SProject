@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 public @Data class SmetTypeJson {
     private String id;
     private String parentId;
+    private String type;
     private String name;
     private String num;
     private Integer isVirtual;
@@ -48,6 +49,7 @@ public @Data class SmetTypeJson {
 
     public SmetTypeJson(EstimateSmr smr) {
         this.id = "r" + smr.getId();
+        this.type = "smr";
         this.name = smr.getName();
         this.num = String.valueOf(smr.getNum());
         this.units = smr.getUnits();
@@ -75,18 +77,21 @@ public @Data class SmetTypeJson {
 
     public SmetTypeJson(EstimateChapter chapter) {
         this.id = "c" + chapter.getId();
+        this.type = "chapter";
         this.name = chapter.getName();
         this.num = chapter.getNum();
     }
 
     public SmetTypeJson(EstimateHeader header) {
         this.id = "h" + header.getId();
+        this.type = "header";
         this.name = header.getName();
         this.num = header.getNum();
     }
 
     public SmetTypeJson(EstimateSmet smet) {
         this.id = "s" + smet.getId();
+        this.type = "smet";
         this.name = smet.getName();
         this.num = smet.getNum();
         this.isVirtual = smet.getIsVirtual();
@@ -95,7 +100,9 @@ public @Data class SmetTypeJson {
         this.dateCreated = smet.getDateCreate();
         this.dataChanged = smet.getDateChange();
         this.userCreated = smet.getUserCreated().getName();
-        this.userChanged = smet.getUserChanged().getName();
+        if (smet.getUserChanged() != null) {
+            this.userChanged = smet.getUserChanged().getName();
+        }
         this.oz = smet.getOz();
         this.em = smet.getEm();
         this.zm = smet.getZm();
