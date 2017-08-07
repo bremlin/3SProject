@@ -1,572 +1,254 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head lang="ru">
-    <title>Проект</title>
+<head>
     <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
-    <link rel="stylesheet" href="../css/font-awesome.min.css"/>
-    <script src="../js/bootstrap-treefy.js"></script>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css"/>
-    <script src="../js/datatables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/w2ui-1.5.rc1.min.css"/>
+    <script type="text/javascript" src="../js/w2ui-1.5.rc1.min.js"></script>
+    <link href="../../static/css/style.css"
+          th:href="@{/css/style.css}" rel="stylesheet" media="screen"/>
 </head>
 <body>
-<div class="container">
-    <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+<!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+<div id="main" style="width: 100%; height: 500px;"></div>
+</body>
+<script>
+    /*<![CDATA[*/
 
-    <button id="addWBS" class="btn btn-primary btn-md" data-toggle="modal" data-target="#addWBSModal">
-        add WBS
-    </button>
-
-    <div class="modal fade" id="addWBSModal" tabindex="-1" role="dialog"
-         aria-labelledby="addWBSModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <!-- Modal Header -->
-                <div class="modal-header">
-                    <button type="button" class="close"
-                            data-dismiss="modal">
-                        <span aria-hidden="true">&times;</span>
-                        <span class="sr-only">Close</span>
-                    </button>
-                    <h4 class="modal-title" id="addWBSModalLabel">
-                        Введите данные
-                    </h4>
-                </div>
-
-                <!-- Modal Body -->
-                <div class="modal-body">
-
-                    <!--TODO id в форму-->
-                    <form role="form">
-                        <div class="form-group hidden">
-                            <label for="wbsId">WBS Id</label>
-                            <input type="text" class="form-control"
-                                   id="wbsId"/>
-                        </div>
-                        <div class="form-group">
-                            <label for="wbsName">Название WBS</label>
-                            <input type="text" class="form-control"
-                                   id="wbsName" placeholder="Введите название WBS"/>
-                        </div>
-                        <div class="form-group">
-                            <label for="wbsCode">Код WBS</label>
-                            <input type="text" class="form-control"
-                                   id="wbsCode" placeholder="Введите код WBS"/>
-                        </div>
-                        <button data-backdrop="static" id="addWBSSubmit" type="button" class="btn btn-default">
-                            Добавить
-                        </button>
-                    </form>
-
-
-                </div>
-
-                <!-- Modal Footer -->
-                <!--<div class="modal-footer">-->
-                <!--<button type="button" class="btn btn-default"-->
-                <!--data-dismiss="modal">-->
-                <!--Отмена-->
-                <!--</button>-->
-                <!--<button type="button" class="btn btn-primary">-->
-                <!--Save changes-->
-                <!--</button>-->
-                <!--</div>-->
-            </div>
-        </div>
-    </div>
-
-    <table id="example" class="display select" cellspacing="0" width="100%">
-        <thead>
-        <tr>
-            <th><input name="select_all" value="1" type="checkbox"/></th>
-            <th class="hidden">WBS Id</th>
-            <th class="hidden">WBS Name</th>
-            <th class="hidden">WBS Code</th>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Status</th>
-            <th>Completion</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        <!--TODO добавить wbs в таблицу заранее и расставить группы-->
-        <!--TODO заполнять ajaxом-->
-        <div id="examplebody" th:each="wbs : ${wbsList}">
-            <tr class="hidden" th:if="${#lists.isEmpty(wbs.activities)}">
-                <td></td>
-                <td class="hidden" th:text="${wbs.id}"></td>
-                <td class="hidden" th:text="${wbs.name}"></td>
-                <td class="hidden" th:text="${wbs.code}"></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr th:each="activity : ${wbs.activities}">
-                <td><input type="checkbox"/></td>
-                <td class="hidden" th:text="${wbs.id}"></td>
-                <td class="hidden" th:text="${wbs.name}"></td>
-                <td class="hidden" th:text="${wbs.code}"></td>
-                <td th:text="${activity.id}"></td>
-                <td th:text="${activity.activityName}"></td>
-                <td th:text="${activity.typeId}"></td>
-                <td th:text="${activity.statusId}"></td>
-                <td th:text="${activity.percentageCompletion}"></td>
-                <td></td>
-            </tr>
-        </div>
-        </tbody>
-    </table>
-
-    <div class="list-group-item" id="grandparent">
-        <div id="expander" data-target="#grandparentContent" data-toggle="collapse" data-group-id="grandparent"
-             data-role="expander">
-            <ul class="list-inline">
-                <li id="grandparentIcon">&gt;</li>
-                <li>Grandparent</li>
-            </ul>
-        </div>
-
-        <div class="collapse" id="grandparentContent" aria-expanded="true">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Created On</th>
-                    <th>Last Modified</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                <tr data-toggle="collapse" data-target=".child1">
-                    <td>
-                        <div>&gt;</div>
-                    </td>
-                    <td>Parent 1</td>
-                    <td>04/02/2017</td>
-                    <td>04/04/2017</td>
-                </tr>
-
-                <tr class="collapse child1">
-                    <td></td>
-                    <td>Child A</td>
-                    <td>04/01/2017</td>
-                    <td>04/05/2017</td>
-                </tr>
-
-                <tr class="collapse child1">
-                    <td></td>
-                    <td>Child B</td>
-                    <td>04/03/2017</td>
-                    <td>04/04/2017</td>
-                </tr>
-
-                <tr data-toggle="collapse" data-target=".child2">
-                    <td>
-                        <div>&gt;</div>
-                    </td>
-                    <td>Parent 2</td>
-                    <td>04/03/2017</td>
-                    <td>04/10/2017</td>
-                </tr>
-
-                <tr class="collapse child2">
-                    <td></td>
-                    <td>Child X</td>
-                    <td>04/10/2017</td>
-                    <td>04/11/2017</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="col-lg-6">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3>Object Store</h3></div>
-            <div class="panel-body">
-                <table class="table table-condensed" style="border-collapse:collapse;">
-
-                    <thead>
-                    <tr>
-                        <th>&nbsp;</th>
-                        <th>Job Name</th>
-                        <th>Description</th>
-                        <th>Provider Name</th>
-                        <th>Region</th>
-                        <th>Status</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    <tr data-toggle="collapse" data-target="#demo1" class="accordion-toggle">
-                        <td>
-                            <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-eye-open"></span>
-                            </button>
-                        </td>
-                        <td>OBS Name</td>
-                        <td>OBS Description</td>
-                        <td>hpcloud</td>
-                        <td>nova</td>
-                        <td> created</td>
-
-                    </tr>
-                    <tr>
-                        <td colspan="12" class="hiddenRow">
-                            <div class="accordian-body collapse" id="demo1">
-                                <table class="table table-striped">
-                                    <thead>
-                                    <tr>
-                                        <td><a href="WorkloadURL">Workload link</a></td>
-                                        <td>Bandwidth: Dandwidth Details</td>
-                                        <td>OBS Endpoint: end point</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Access Key</th>
-                                        <th>Secret Key</th>
-                                        <th>Status</th>
-                                        <th> Created</th>
-                                        <th> Expires</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td>access-key-1</td>
-                                        <td>secretKey-1</td>
-                                        <td>Status</td>
-                                        <td>some date</td>
-                                        <td>some date</td>
-                                        <td>
-                                            <a href="#" class="btn btn-default btn-sm">
-                                                <i class="glyphicon glyphicon-cog"></i></a>
-                                        </td>
-                                    </tr>
-
-
-                                    </tbody>
-                                </table>
-
-                            </div>
-                        </td>
-                    </tr>
-                    <tr data-toggle="collapse" data-target="#demo2" class="accordion-toggle">
-                        <td>
-                            <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-eye-open"></span>
-                            </button>
-                        </td>
-                        <td>OBS Name</td>
-                        <td>OBS Description</td>
-                        <td>hpcloud</td>
-                        <td>nova</td>
-                        <td> created</td>
-                    </tr>
-                    <tr>
-                        <td colspan="6" class="hiddenRow">
-                            <div id="demo2" class="accordian-body collapse">Demo2</div>
-                        </td>
-                    </tr>
-                    <tr data-toggle="collapse" data-target="#demo3" class="accordion-toggle">
-                        <td>
-                            <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-eye-open"></span>
-                            </button>
-                        </td>
-                        <td>OBS Name</td>
-                        <td>OBS Description</td>
-                        <td>hpcloud</td>
-                        <td>nova</td>
-                        <td> created</td>
-                    </tr>
-                    <tr>
-                        <td colspan="6" class="hiddenRow">
-                            <div id="demo3" class="accordian-body collapse">Demo3</div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
-
-    </div>
-
-    <!--<script>-->
-    <!--$('.collapse').on('show.bs.collapse', function () {-->
-    <!--var groupId = $('#expander').attr('data-group-id');-->
-    <!--if (groupId) {-->
-    <!--$('#grandparentIcon').html('V');-->
-    <!--}-->
-    <!--});-->
-
-    <!--$('.collapse').on('hide.bs.collapse', function () {-->
-    <!--var groupId = $('#expander').attr('data-group-id');-->
-    <!--if (groupId) {-->
-    <!--$('#' + groupId + 'Icon').html('>');-->
-    <!--}-->
-    <!--});-->
-
-    <!--    </script>-->
-
-    <script>
-
-        /*<![CDATA[*/
-
-        //
-        // Updates "Select all" control in a data table
-        //
-        function updateDataTableSelectAllCtrl(table) {
-            var $table = table.table().node();
-            var $chkbox_all = $('tbody input[type="checkbox"]', $table);
-            var $chkbox_checked = $('tbody input[type="checkbox"]:checked', $table);
-            var chkbox_select_all = $('thead input[name="select_all"]', $table).get(0);
-
-            // If none of the checkboxes are checked
-            if ($chkbox_checked.length === 0) {
-                chkbox_select_all.checked = false;
-                if ('indeterminate' in chkbox_select_all) {
-                    chkbox_select_all.indeterminate = false;
+    var config = {
+        layout: {
+            name: 'layout',
+            padding: 5,
+            panels: [
+                {type: 'left', size: '35%'/*, resizable: true, minSize: 300*/},
+                {type: 'right', size: '65%'/*, resizable: true, minSize: 300*/}
+            ]
+        },
+        actLayout: {
+            name: 'actLayout',
+            padding: 5,
+            panels: [
+                {type: 'top', size: '80%'},
+                {type: 'left', size: '100%'}
+            ]
+        },
+        activities: {
+            name: 'grid',
+            show: {
+                selectColumn: true,
+                toolbar: true,
+                toolbarDelete: true,
+                toolbarEdit: true,
+                footer: true,
+                expandColumn: true
+            },
+            onExpand: function (event) {
+                console.log(this.get(event.recid));
+                if (this.get(event.recid).w2ui.children === undefined) {
+                    this.collapse(event.recid);
+                } else {
+                    jQuery('#' + event.box_id).css({
+                        margin: '0px',
+                        padding: '0px',
+                        width: '100%'
+                    }).animate({height: '500px'}, 100);
                 }
-
-                // If all of the checkboxes are checked
-            } else if ($chkbox_checked.length === $chkbox_all.length) {
-                chkbox_select_all.checked = true;
-                if ('indeterminate' in chkbox_select_all) {
-                    chkbox_select_all.indeterminate = false;
-                }
-
-                // If some of the checkboxes are checked
-            } else {
-                chkbox_select_all.checked = true;
-                if ('indeterminate' in chkbox_select_all) {
-                    chkbox_select_all.indeterminate = true;
-                }
-            }
-        }
-
-        function tableCreation() {
-// Array holding selected row IDs
-            var rows_selected = [];
-
-            var table = $('#example').DataTable({
-                'columnDefs': [{
-                    'targets': 0,
-                    'searchable': false,
-                    'orderable': false,
-                    'width': '1%',
-                    'className': 'dt-body-center',
-                    'render': function (data, type, full, meta) {
-                        return '<input type="checkbox">';
+            },
+            onEdit: function (event) {
+                var sel = this.getSelection();
+                if (sel.length === 1) {
+                    if (this.get(sel[0]).type === 'wbs') {
+                        editWbsPopup(this);
+                    } else if (this.get(sel[0]).type === 'act') {
+                        editActPopup(this);
                     }
-                }],
-                'order': [2, 'asc'],
-                'rowCallback': function (row, data, dataIndex) {
-                    // Get row ID
-                    var rowId = data[0];
-
-                    // If row ID is in the list of selected row IDs
-                    if ($.inArray(rowId, rows_selected) !== -1) {
-                        $(row).find('input[type="checkbox"]').prop('checked', true);
-                        $(row).addClass('selected');
-                    }
-                },
-                "drawCallback": function (settings) {
-                    var api = this.api();
-                    var rows = api.rows({page: 'current'}).nodes();
-                    var last = null;
-
-                    var wbsIdColumn = api.column(1, {page: 'current'}).data();
-                    var wbsCodeColumn = api.column(3, {page: 'current'}).data();
-
-                    var groupadmin = [];
-
-                    api.column(2, {page: 'current'}).data().each(function (group, i) {
-                        if (last !== group) {
-                            $(rows).eq(i).before(
-                                '<tr class="group" id="' + i + '">' +
-                                '<td>' +
-                                '<button id="button_' + i + '"><span class="glyphicon glyphicon-plus"></span></button>' +
-                                '</td>' +
-                                '<td class="hidden">' + wbsIdColumn[i] + '</td>' +
-                                '<td></td>' +
-                                '<td>' + group + '</td>' +
-                                '<td colspan="3">' + wbsCodeColumn[i] + '</td>' +
-                                '<td>' +
-                                '<button id="editWBS" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addWBSModal">' +
-                                'edit WBS' +
-                                '</button>' +
-                                '</td>' +
-                                '</tr>'
-                            );
-
-                            groupadmin.push(i);
-
-                            last = group;
+                }
+            },
+            onDelete: function (event) {
+                if (event.force === true) {
+                    console.log(event);
+                    var sel = this.getSelection();
+                    if (sel.length > 0) {
+                        var data = {};
+                        data.idList = [];
+                        for (var idx in sel) {
+                            data.idList.push(sel[idx]);
                         }
-                    });
-
-                    for (var k = 0; k < groupadmin.length; k++) {
-                        // Code added for adding class to sibling elements as "group_<id>"
-                        var regexp = new RegExp('group_\\d+');
-
-                        var arr = $("#" + groupadmin[k]).nextUntil("#" + groupadmin[k + 1]);
-                        for (var i = 0; i < arr.length; i++) {
-                            arr[i].className = arr[i].className.replace(regexp, "");
-                        }
-                        ;
-                        $("#" + groupadmin[k]).nextUntil("#" + groupadmin[k + 1]).addClass(' group_' + groupadmin[k]);
-                        // Code added for adding Toggle functionality for each group
-                        $("#button_" + groupadmin[k]).off("click");
-                        $("#button_" + groupadmin[k]).click(function () {
-                            var gid = $(this).attr("id").substr(7);
-                            console.log("id:" + $(this).attr("id").substr(7));
-                            $(".group_" + gid).slideToggle(300);
+//                        data.id = this.get(sel[0]).id;
+                        $.ajax({
+                            type: "POST",
+                            contentType: "application/json",
+                            url: "/delete_wbs",
+                            data: JSON.stringify(data)
                         });
-
+                    }
+                    console.log('ended');
+                }
+            },
+            multiselect: true,
+            multiSearch: true,
+            searches: [
+                {field: 'id', caption: 'Id', type: 'int'},
+                {field: 'parentId', caption: 'Parent Id', type: 'int'},
+                {field: 'type', caption: 'type', type: 'list', options: {items: ['wbs', 'act']}},
+                {field: 'name', caption: 'Name', type: 'text'},
+                {field: 'code', caption: 'Code', type: 'text'},
+                {field: 'cost', caption: 'Cost', type: 'float'}
+            ],
+            toolbar: {
+                items: [
+                    {type: 'break'},
+                    {type: 'button', id: 'addWbsButton', caption: 'Add wbs', img: 'w2ui-icon-plus'},
+                    {type: 'button', id: 'addActButton', caption: 'Add activity', img: 'w2ui-icon-plus'}
+                ],
+                onClick: function (target, data) {
+                    if (target === 'addWbsButton') {
+                        addWbsPopup();
+                    } else if (target === 'addActButton') {
+                        addActPopup();
                     }
                 },
-                'paging': false
-            });
-
-            // Handle click on edit button
-            $('#example tbody').on('click', 'button', function (e) {
-                if ($(this).attr("id") !== "editWBS") {
-                    return;
+                onRefresh: function () {
+                    this.remove("w2ui-reload");
                 }
-                var data = $(this).closest('tr');
-                data[0].classList.add("editing");
-                var wbsId = {};
-                wbsId["id"] = data.find('td')[1].innerText;
-                $.ajax({
-                    type: "GET",
-                    url: "/edit_wbs",
-                    data: wbsId,
-                    dataType: 'text',
-                    timeout: 600000,
-                    success: function (result) {
-                        result = JSON.parse(result);
-                        $("#wbsId")[0].value = result["id"];
-                        $("#wbsName")[0].value = result["name"];
-                        $("#wbsCode")[0].value = result["code"];
-                    },
-                    error: function (e) {
-                        console.log("error: " + e.statusText);
-                        data[0].classList.remove("editing");
-//                            alert("fail");
-                    }
+            },
+            recid: 'id',
+            columns: [
+                {field: 'id', caption: 'Id', size: '10%', hidden: true, sortable: true},
+                {field: 'type', caption: 'Type', size: '0%', hidden: true},
+                {field: 'parentId', caption: 'Parent Id', size: '10%', sortable: true},
+                {field: 'name', caption: 'Name', size: '35%', sortable: true},
+                {field: 'code', caption: 'Code', size: '35%', sortable: true},
+                {field: 'cost', caption: 'Cost', size: '10%', sortable: true}
+            ],
+            onReload: function (event) {
+                //TODO smet by project
+                this.load('/get_wbs_list?id=5');
+            },
+            onRefresh: function (event) {
+                var table = this;
+                var records = this.records;
+                records.forEach(function (record) {
+                    console.log(record);
                 })
-            });
-
-            // Handle click on checkbox
-            $('#example tbody').on('click', 'input[type="checkbox"]', function (e) {
-                var $row = $(this).closest('tr');
-
-                // Get row data
-                var data = table.row($row).data();
-
-                // Get row ID
-                var rowId = data[0];
-
-                // Determine whether row ID is in the list of selected row IDs
-                var index = $.inArray(rowId, rows_selected);
-
-                // If checkbox is checked and row ID is not in list of selected row IDs
-                if (this.checked && index === -1) {
-                    rows_selected.push(rowId);
-
-                    // Otherwise, if checkbox is not checked and row ID is in list of selected row IDs
-                } else if (!this.checked && index !== -1) {
-                    rows_selected.splice(index, 1);
+            },
+            onClick: function (event) {
+//                w2alert(this.get(event.recid).name);
+            }
+        },
+        smet: {
+            name: 'smet',
+            show: {
+                selectColumn: true,
+                toolbar: true,
+                footer: true,
+                expandColumn: true
+            },
+            onExpand: function (event) {
+                jQuery('#' + event.box_id).css({
+                    margin: '0px',
+                    padding: '0px',
+                    width: '100%'
+                }).animate({height: '500px'}, 100);
+                console.log(this.get(event.recid));
+                if (this.get(event.recid).w2ui.children === undefined) {
+                    this.collapse(event.recid);
                 }
-
-                if (this.checked) {
-                    $row.addClass('selected');
-                } else {
-                    $row.removeClass('selected');
+            },
+            multiselect: true,
+            toolbar: {
+                items: [
+                    {type: 'break'}
+                ],
+                onClick: function (target, data) {
+                    console.log(target);
+                },
+                onRefresh: function () {
+                    this.remove("w2ui-reload");
                 }
+            },
+            recid: 'id',
+            columns: [
+                {field: 'id', caption: 'Id', size: '4%', hidden: true, sortable: true},
+                {field: 'parentId', caption: 'Parent Id', hidden: true, sortable: true},
+                {field: 'type', caption: 'Type', hidden: true, sortable: true},
+                {field: 'name', caption: 'Name', size: '4%', sortable: true},
+                {field: 'num', caption: 'Num', size: '4%', sortable: true},
+                {field: 'isVirtual', caption: 'Is Virtual', hidden: true, sortable: true},
+                {field: 'comment', caption: 'Comment', hidden: true, sortable: true},
+                {field: 'status', caption: 'Status', hidden: true, sortable: true},
+                {field: 'dateCreated', caption: 'Date Created', hidden: true, sortable: true},
+                {field: 'dateChanged', caption: 'Date Changed', hidden: true, sortable: true},
+                {field: 'userCreated', caption: 'User Created', hidden: true, sortable: true},
+                {field: 'userChanged', caption: 'User Changed', hidden: true, sortable: true},
+                {field: 'region', caption: 'Region', hidden: true, sortable: true},
+                {field: 'code', caption: 'Code', hidden: true, sortable: true},
+                {field: 'units', caption: 'Units', size: '4%', sortable: true},
+                {field: 'quantity', caption: 'Quantity', size: '4%', sortable: true},
+                {field: 'oz', caption: 'Oz', size: '4%', sortable: true},
+                {field: 'em', caption: 'em', size: '4%', sortable: true},
+                {field: 'zm', caption: 'zm', size: '4%', sortable: true},
+                {field: 'mt', caption: 'mt', size: '4%', sortable: true},
+                {field: 'pz', caption: 'pz', size: '4%', sortable: true},
+                {field: 'nr', caption: 'nr', size: '4%', sortable: true},
+                {field: 'sp', caption: 'sp', size: '4%', sortable: true},
+                {field: 'sum', caption: 'sum', size: '4%', sortable: true},
+                {field: 'tzr', caption: 'tzr', size: '4%', sortable: true},
+                {field: 'tzm', caption: 'tzm', size: '4%', sortable: true},
+                {field: 'ozCost', caption: 'ozCost', size: '4%', sortable: true},
+                {field: 'emCost', caption: 'emCost', size: '4%', sortable: true},
+                {field: 'zmCost', caption: 'zmCost', size: '4%', sortable: true},
+                {field: 'mtCost', caption: 'mtCost', size: '4%', sortable: true},
+                {field: 'pzCost', caption: 'pzCost', size: '4%', sortable: true},
+                {field: 'nrCost', caption: 'nrCost', size: '4%', sortable: true},
+                {field: 'spCost', caption: 'spCost', size: '4%', sortable: true},
+                {field: 'tzrCost', caption: 'tzrCost', size: '4%', sortable: true},
+                {field: 'tzmCost', caption: 'tzmCost', size: '4%', sortable: true}
 
-                // Update state of "Select all" control
-                updateDataTableSelectAllCtrl(table);
+            ],
+            onReload: function (event) {
+                this.load('/get_smet_by_project?id=' + document.URL.substr(document.URL.lastIndexOf('/') + 1));
+            }
+        },
+        wbsForm: {
+            name: 'addWbsForm',
+            style: 'border: 0px; background-color: transparent;',
+            formHTML: '<div role="form" class="w2ui-page page-0">' +
+            '    <div class="w2ui-field">' +
+            '        <label class="hidden">Id:</label>' +
+            '        <div class="hidden">' +
+            '           <input name="wbsId" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    <div class="w2ui-field">' +
+            '        <label>Название WBS:</label>' +
+            '        <div>' +
+            '           <input name="wbsName" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    </div>' +
+            '    <div class="w2ui-field">' +
+            '        <label>Код WBS:</label>' +
+            '        <div>' +
+            '            <input name="wbsCode" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    </div>' +
+            '</div>' +
+            '<div class="w2ui-buttons">' +
+            '    <button class="w2ui-btn" name="reset">Reset</button>' +
+            '    <button class="w2ui-btn" id="saveWbs" name="save">Save</button>' +
+            '</div>' +
+            '</div>',
+            fields: [
+                {field: 'wbsId', type: 'text', required: false},
+                {field: 'wbsName', type: 'text', required: true},
+                {field: 'wbsCode', type: 'text', required: true}
+            ],
+            actions: {
+                "save": function () {
+                    var addWbsForm = this;
+                    addWbsForm.validate();
 
-                // Prevent click event from propagating to parent
-                e.stopPropagation();
-            });
-
-            // Handle click on table cells with checkboxes
-            $('#example').on('click', 'tbody td, thead th:first-child', function (e) {
-                $(this).parent().find('input[type="checkbox"]').trigger('click');
-            });
-
-            // Handle click on "Select all" control
-            $('thead input[name="select_all"]', table.table().container()).on('click', function (e) {
-                if (this.checked) {
-                    $('#example tbody input[type="checkbox"]:not(:checked)').trigger('click');
-                } else {
-                    $('#example tbody input[type="checkbox"]:checked').trigger('click');
-                }
-
-                // Prevent click event from propagating to parent
-                e.stopPropagation();
-            });
-
-            // Handle table draw event
-            table.on('draw', function () {
-                // Update state of "Select all" control
-                updateDataTableSelectAllCtrl(table);
-            });
-
-//
-//            // Handle form submission event
-//            $('#frm-example').on('submit', function(e){
-//                var form = this;
-//
-//                // Iterate over all selected checkboxes
-//                $.each(rows_selected, function(index, rowId){
-//                    // Create a hidden element
-//                    $(form).append(
-//                        $('<input>')
-//                            .attr('type', 'hidden')
-//                            .attr('name', 'id[]')
-//                            .val(rowId)
-//                    );
-//                });
-//
-//                // FOR DEMONSTRATION ONLY
-//
-//                // Output form data to a console
-//                $('#example-console').text($(form).serialize());
-//                console.log("Form submission", $(form).serialize());
-//
-//                // Remove added elements
-//                $('input[name="id\[\]"]', form).remove();
-//
-//                // Prevent actual form submission
-//                e.preventDefault();
-//            });
-        }
-        $(document).ready(function () {
-            tableCreation();
-        });
-
-        /*]]>*/
-
-    </script>
-
-    <script>
-
-        /*<![CDATA[*/
-
-        jQuery(document).ready(
-            function ($) {
-
-                $("#addWBSSubmit").click(function (event) {
-                    var table = $("#example").DataTable();
                     var wbs = {};
                     wbs["projectId"] = document.URL.substr(document.URL.lastIndexOf('/') + 1);
+//                    wbs["projectId"] = 5;
                     wbs["id"] = $("#wbsId").val();
                     wbs["name"] = $("#wbsName").val();
                     wbs["code"] = $("#wbsCode").val();
@@ -575,50 +257,229 @@
                         contentType: "application/json",
                         url: "/add_wbs",
                         data: JSON.stringify(wbs),
-//                        dataType: 'json',
                         timeout: 600000,
-//                        TODO: хранить в result id?
                         success: function (result) {
-                            $("#addWBSModal").modal("hide");
-                            if ($("#wbsId").val() === "") {
-                                var rowNode = table.row.add(
-                                    ["", result, wbs["name"], wbs["code"], "", "", "", "", "", ""]
-                                );
-                                table.draw();
-                                rowNode.node().classList.add('hidden')
-                            } else {
-                                var editedRow = $("#example").find(".editing");
-                                var editedRowId = editedRow.attr("id");
+                            addWbsForm.clear();
+                            w2popup.close();
 
-                                var activities = $("#" + editedRowId).nextUntil("#" + + (editedRowId + 1));
-                                for (var i = 0; i < activities.length; i++) {
-                                    table.cell(activities[i], 2).data(wbs["name"]);
-                                    table.cell(activities[i], 3).data(wbs["code"]);
-//                                    activities.find("td")[2].innerText = wbs["name"];
-//                                    activities.find("td")[3].innerText = wbs["code"];
-                                }
-
-                                editedRow.find("td")[1].innerText = wbs["id"];
-                                editedRow.find("td")[3].innerText = wbs["name"];
-                                editedRow.find("td")[4].innerText = wbs["code"];
-                                $("#example").find(".editing").removeClass("editing");
-                                //TODO изменять все зависимые activities
-                            }
-                            $("#addWBSModal").find("input,textarea,select").val('').end();
+                            reloadWithPosition();
                         },
                         error: function (e) {
-                            console.log("error: " + e.statusText);
-//                            alert("fail");
+
                         }
-                    })
-                })
+                    });
+                },
+                "reset": function () {
+                    this.clear();
+                }
             }
-        )
+        },
+        wbsPopup: {
+            title: 'Add WBS',
+            body: '<div id="form" style="width: 100%; height: 100%;"></div>',
+            style: 'padding: 15px 0px 0px 0px',
+            width: 750,
+            height: 300,
+            showMax: true,
+            onToggle: function (event) {
+                console.log(event);
+                $(w2ui.addWbsForm.box).hide();
+                event.onComplete = function () {
+                    $(w2ui.addWbsForm.box).show();
+                    w2ui.addWbsForm.resize();
+                }
+            },
+            onOpen: function (event) {
+                console.log(event);
+                event.onComplete = function () {
+                    // specifying an onOpen handler instead is equivalent to specifying an onBeforeOpen handler, which would make this code execute too early and hence not deliver.
+                    $('#w2ui-popup #form').w2render('addWbsForm');
+                }
+            }
+        },
+        actForm: {
+            name: 'actForm',
+            style: 'border: 0px; background-color: transparent;',
+            formHTML: //TODO align="center"
+            '<div role="form" class="w2ui-page page-0">' +
+            '    <div class="w2ui-field">' +
+            '        <label>Id:</label>' +
+            '        <div>' +
+            '           <input name="actId" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    </div>' +
+            '    <div class="w2ui-field">' +
+            '        <label>WBS Id:</label>' +
+            '        <div>' +
+            '           <input name="wbsId" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    </div>' +
+            '    <div class="w2ui-field">' +
+            '        <label>Название работы:</label>' +
+            '        <div>' +
+            '           <input name="actName" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    </div>' +
+            '    <div class="w2ui-field">' +
+            '        <label>Стоимость работы:</label>' +
+            '        <div>' +
+            '            <input name="actCost" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    </div>' +
+            '</div>' +
+            '<div class="w2ui-buttons">' +
+            '    <button class="w2ui-btn" name="reset">Reset</button>' +
+            '    <button class="w2ui-btn" id="saveWbs" name="save">Save</button>' +
+            '</div>',
+            fields: [
+                {field: 'actId', type: 'text', required: false, hidden: true},
+                {field: 'wbsId', type: 'text', required: true},
+                {field: 'actName', type: 'text', required: true},
+                {field: 'actCost', type: 'text', required: true, render: 'money'}
+            ],
+            actions: {
+                "save": function () {
+                    var actForm = this;
+                    actForm.validate();
 
-        /*]]>*/
+                    var act = {};
+//        wbs["projectId"] = document.URL.substr(document.URL.lastIndexOf('/') + 1);
+                    act["actId"] = $("#actId").val();
+                    act["wbsId"] = $("#wbsId").val();
+                    act["name"] = $("#actName").val();
+                    act["cost"] = $("#actCost").val();
+                    $.ajax({
+                        type: "POST",
+                        contentType: "application/json",
+                        url: "/add_act",
+                        data: JSON.stringify(act),
+                        timeout: 600000,
+                        success: function (result) {
+                            actForm.clear();
+                            w2popup.close();
 
-    </script>
+                            reloadWithPosition();
+                        },
+                        error: function (e) {
 
-</div>
-</body>
+                        }
+                    });
+                },
+                "reset": function () {
+                    this.clear();
+                }
+            }
+        },
+        actPopup: {
+            title: 'Add activity',
+            body: '<div id="actForm" style="width: 100%; height: 100%;"></div>',
+            style: 'padding: 15px 0px 0px 0px',
+            width: 750,
+            height: 300,
+            showMax: true,
+            onToggle: function (event) {
+                $(w2ui.actForm.box).hide();
+                event.onComplete = function () {
+                    $(w2ui.actForm.box).show();
+                    w2ui.actForm.resize();
+                }
+            },
+            onOpen: function (event) {
+                event.onComplete = function () {
+                    // specifying an onOpen handler instead is equivalent to specifying an onBeforeOpen handler, which would make this code execute too early and hence not deliver.
+                    $('#w2ui-popup #actForm').w2render('actForm');
+                }
+            }
+        }
+    };
+
+    function addWbsPopup() {
+//        if (!w2ui.addWbsForm) {
+        $().w2form(config.wbsForm);
+        $().w2popup('open', config.wbsPopup);
+//        }
+    }
+
+    function editWbsPopup(grid) {
+        var sel = grid.getSelection();
+        var record = grid.get(sel[0]);
+
+        if (!w2ui.addWbsForm) {
+            $().w2form(config.wbsForm);
+        }
+
+        w2ui.addWbsForm.record.wbsId = record.id;
+        w2ui.addWbsForm.record.wbsName = record.name;
+        w2ui.addWbsForm.record.wbsCode = record.code;
+        $().w2popup('open', config.wbsPopup);
+    }
+
+    function addActPopup() {
+        $().w2form(config.actForm);
+        $().w2popup('open', config.actPopup);
+    }
+
+    function editActPopup(grid) {
+        var sel = grid.getSelection();
+        var record = grid.get(sel[0]);
+
+        if (!w2ui.actForm) {
+            $().w2form(config.actForm);
+        }
+
+        w2ui.actForm.record.actId = record.id.substr(1);
+        w2ui.actForm.record.wbsId = record.w2ui.parent_recid;
+        w2ui.actForm.record.actName = record.name;
+        w2ui.actForm.record.actCost = record.cost;
+        $().w2popup('open', config.actPopup);
+    }
+
+    function reloadWithPosition() {
+        var st = w2ui['grid'].last.scrollTop;
+        var expanded = $('.w2ui-expanded');
+        var expanded_ids = [];
+        for (var i = 0; i < expanded.length; i++) {
+            var id = expanded[i].outerText.split('\n')[0];
+            if (id !== "") {
+                expanded_ids.push(id);
+            }
+        }
+
+        w2ui['grid'].load('/get_wbs_list?id=' + document.URL.substr(document.URL.lastIndexOf('/') + 1), function () {
+            for (var idx in expanded_ids) {
+                console.log(expanded_ids[idx]);
+                w2ui['grid'].expand(expanded_ids[idx]);
+            }
+            w2ui['grid'].last.scrollTop = st;
+
+            w2ui['grid'].refresh();
+        });
+    }
+
+    //TODO id wbs и activity могут пересекаться, из-за этого будут сворачивать и разворачиваться несколько строк
+    //TODO разница в количестве рекордс? неправильный джсон?
+    $(function () {
+        $.ajax({
+            url: '/get_wbs_list?id=' + document.URL.substr(document.URL.lastIndexOf('/') + 1),
+            method: 'GET',
+            success: function (result) {
+                config.activities.records = result;
+                $('#main').w2layout(config.layout);
+                w2ui.layout.content('left', $().w2layout(config.actLayout));
+                w2ui.actLayout.content('top', $().w2grid(config.activities));
+            }
+        });
+
+        $.ajax({
+            url: '/get_smet_by_project?id=' + document.URL.substr(document.URL.lastIndexOf('/') + 1),
+            method: 'GET',
+            success: function (result) {
+                config.smet.records = result;
+                w2ui.layout.content('right', $().w2grid(config.smet));
+            }
+        });
+    });
+
+    /*]]>*/
+</script>
 </html>

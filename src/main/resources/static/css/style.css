@@ -12,3 +12,12 @@ tr.group:hover {
     background-color: #ddd !important;
     cursor:pointer;
 }
+
+.w2ui-grid .w2ui-grid-body .w2ui-grid-records .w2ui-expanded1 > div,
+.w2ui-grid .w2ui-grid-body .w2ui-grid-frecords .w2ui-expanded1 > div {
+    height: 300px !important;
+}
+
+.w2ui-icon-empty .w2ui-icon-expand .w2ui-icon-collapse {
+    display: none;
+}

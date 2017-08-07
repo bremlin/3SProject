@@ -3,6 +3,7 @@ package com.ibcon.sproject.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.joda.time.DateTime;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
@@ -14,6 +15,7 @@ import javax.persistence.*;
 //@EntityListeners(ActivityListener.class)
 @Table(name = "activities")
 @EqualsAndHashCode(exclude = "wbs")
+@ToString(exclude = "wbs")
 public @Data class Activity extends AbstractDomainClass {
     private Integer projectObjectId;
     private Integer projectId;

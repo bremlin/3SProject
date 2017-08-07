@@ -56,7 +56,7 @@ public class SmetJsonTree {
     }
 
     //TODO refactor
-    public List<SmetTypeJson> convertSmetToJson(Integer smetId) {
+    public SmetTypeJson convertSmetToJson(Integer smetId) {
         smet = estimateSmetService.getById(smetId);
         region = estimateRegionService.getById(smet.getRegion().getId());
         chapters = estimateChapterService.findAllBySmetId(smetId);
@@ -106,8 +106,6 @@ public class SmetJsonTree {
             }
         }
 
-        List<SmetTypeJson> result = new ArrayList<>();
-        result.add(root);
-        return result;
+        return root;
     }
 }

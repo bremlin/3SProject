@@ -1,5 +1,6 @@
 package com.ibcon.sproject.services.crud.estimatesmet;
 
+import com.ibcon.sproject.domain.WBS;
 import com.ibcon.sproject.domain.smet.EstimateSmet;
 import com.ibcon.sproject.repositories.EstimateSmetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class EstimateSmetServiceImpl implements EstimateSmetService {
@@ -38,5 +40,11 @@ public class EstimateSmetServiceImpl implements EstimateSmetService {
     @Override
     public void delete(Integer id) {
         estimateSmetRepository.delete(id);
+    }
+
+
+    @Override
+    public List<EstimateSmet> findByWbsSetId(Integer id) {
+        return estimateSmetRepository.findByWbsSet_Id(id);
     }
 }

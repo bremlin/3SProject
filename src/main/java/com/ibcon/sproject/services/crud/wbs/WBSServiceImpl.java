@@ -1,6 +1,7 @@
 package com.ibcon.sproject.services.crud.wbs;
 
 import com.ibcon.sproject.domain.WBS;
+import com.ibcon.sproject.domain.smet.EstimateSmet;
 import com.ibcon.sproject.repositories.WBSRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,4 +44,9 @@ public class WBSServiceImpl implements WBSService {
     public List<WBS> findByProjectId(Integer id) {
         return wbsRepository.findAllByProjectId(id);
     }
+
+//    @Override
+//    public List<EstimateSmet> findEstimateSmetsByWbsId(Integer id) {
+//        return wbsRepository.findEstimateSmetsByWbsId(id);
+//    }
 }

@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="ru">
+    <title>Проект</title>
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+    <link rel="stylesheet" href="../css/font-awesome.min.css"/>
+    <script src="../js/bootstrap-treefy.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css"/>
+    <script src="../js/datatables.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+
+    <button id="addWBS" class="btn btn-primary btn-md" data-toggle="modal" data-target="#addWBSModal">
+        add WBS
+    </button>
+
+    <div class="modal fade" id="addWBSModal" tabindex="-1" role="dialog"
+         aria-labelledby="addWBSModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title" id="addWBSModalLabel">
+                        Введите данные
+                    </h4>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body">
+
+                    <!--TODO id в форму-->
+                    <form role="form">
+                        <div class="form-group hidden">
+                            <label for="wbsId">WBS Id</label>
+                            <input type="text" class="form-control"
+                                   id="wbsId"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="wbsName">Название WBS</label>
+                            <input type="text" class="form-control"
+                                   id="wbsName" placeholder="Введите название WBS"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="wbsCode">Код WBS</label>
+                            <input type="text" class="form-control"
+                                   id="wbsCode" placeholder="Введите код WBS"/>
+                        </div>
+                        <button data-backdrop="static" id="addWBSSubmit" type="button" class="btn btn-default">
+                            Добавить
+                        </button>
+                    </form>
+
+
+                </div>
+
+                <!-- Modal Footer -->
+                <!--<div class="modal-footer">-->
+                <!--<button type="button" class="btn btn-default"-->
+                <!--data-dismiss="modal">-->
+                <!--Отмена-->
+                <!--</button>-->
+                <!--<button type="button" class="btn btn-primary">-->
+                <!--Save changes-->
+                <!--</button>-->
+                <!--</div>-->
+            </div>
+        </div>
+    </div>
+
+    <table id="example" class="display select" cellspacing="0" width="100%">
+        <thead>
+        <tr>
+            <th><input name="select_all" value="1" type="checkbox"/></th>
+            <th class="hidden">WBS Id</th>
+            <th class="hidden">WBS Name</th>
+            <th class="hidden">WBS Code</th>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Completion</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--TODO добавить wbs в таблицу заранее и расставить группы-->
+        <!--TODO заполнять ajaxом-->
+        <div id="examplebody" th:each="wbs : ${wbsList}">
+            <tr class="hidden" th:if="${#lists.isEmpty(wbs.activities)}">
+                <td></td>
+                <td class="hidden" th:text="${wbs.id}"></td>
+                <td class="hidden" th:text="${wbs.name}"></td>
+                <td class="hidden" th:text="${wbs.code}"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr th:each="activity : ${wbs.activities}">
+                <td><input type="checkbox"/></td>
+                <td class="hidden" th:text="${wbs.id}"></td>
+                <td class="hidden" th:text="${wbs.name}"></td>
+                <td class="hidden" th:text="${wbs.code}"></td>
+                <td th:text="${activity.id}"></td>
+                <td th:text="${activity.activityName}"></td>
+                <td th:text="${activity.typeId}"></td>
+                <td th:text="${activity.statusId}"></td>
+                <td th:text="${activity.percentageCompletion}"></td>
+                <td></td>
+            </tr>
+        </div>
+        </tbody>
+    </table>
+
+    <div class="list-group-item" id="grandparent">
+        <div id="expander" data-target="#grandparentContent" data-toggle="collapse" data-group-id="grandparent"
+             data-role="expander">
+            <ul class="list-inline">
+                <li id="grandparentIcon">&gt;</li>
+                <li>Grandparent</li>
+            </ul>
+        </div>
+
+        <div class="collapse" id="grandparentContent" aria-expanded="true">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Created On</th>
+                    <th>Last Modified</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr data-toggle="collapse" data-target=".child1">
+                    <td>
+                        <div>&gt;</div>
+                    </td>
+                    <td>Parent 1</td>
+                    <td>04/02/2017</td>
+                    <td>04/04/2017</td>
+                </tr>
+
+                <tr class="collapse child1">
+                    <td></td>
+                    <td>Child A</td>
+                    <td>04/01/2017</td>
+                    <td>04/05/2017</td>
+                </tr>
+
+                <tr class="collapse child1">
+                    <td></td>
+                    <td>Child B</td>
+                    <td>04/03/2017</td>
+                    <td>04/04/2017</td>
+                </tr>
+
+                <tr data-toggle="collapse" data-target=".child2">
+                    <td>
+                        <div>&gt;</div>
+                    </td>
+                    <td>Parent 2</td>
+                    <td>04/03/2017</td>
+                    <td>04/10/2017</td>
+                </tr>
+
+                <tr class="collapse child2">
+                    <td></td>
+                    <td>Child X</td>
+                    <td>04/10/2017</td>
+                    <td>04/11/2017</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3>Object Store</h3></div>
+            <div class="panel-body">
+                <table class="table table-condensed" style="border-collapse:collapse;">
+
+                    <thead>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>Job Name</th>
+                        <th>Description</th>
+                        <th>Provider Name</th>
+                        <th>Region</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr data-toggle="collapse" data-target="#demo1" class="accordion-toggle">
+                        <td>
+                            <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-eye-open"></span>
+                            </button>
+                        </td>
+                        <td>OBS Name</td>
+                        <td>OBS Description</td>
+                        <td>hpcloud</td>
+                        <td>nova</td>
+                        <td> created</td>
+
+                    </tr>
+                    <tr>
+                        <td colspan="12" class="hiddenRow">
+                            <div class="accordian-body collapse" id="demo1">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <td><a href="WorkloadURL">Workload link</a></td>
+                                        <td>Bandwidth: Dandwidth Details</td>
+                                        <td>OBS Endpoint: end point</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Access Key</th>
+                                        <th>Secret Key</th>
+                                        <th>Status</th>
+                                        <th> Created</th>
+                                        <th> Expires</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>access-key-1</td>
+                                        <td>secretKey-1</td>
+                                        <td>Status</td>
+                                        <td>some date</td>
+                                        <td>some date</td>
+                                        <td>
+                                            <a href="#" class="btn btn-default btn-sm">
+                                                <i class="glyphicon glyphicon-cog"></i></a>
+                                        </td>
+                                    </tr>
+
+
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-toggle="collapse" data-target="#demo2" class="accordion-toggle">
+                        <td>
+                            <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-eye-open"></span>
+                            </button>
+                        </td>
+                        <td>OBS Name</td>
+                        <td>OBS Description</td>
+                        <td>hpcloud</td>
+                        <td>nova</td>
+                        <td> created</td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" class="hiddenRow">
+                            <div id="demo2" class="accordian-body collapse">Demo2</div>
+                        </td>
+                    </tr>
+                    <tr data-toggle="collapse" data-target="#demo3" class="accordion-toggle">
+                        <td>
+                            <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-eye-open"></span>
+                            </button>
+                        </td>
+                        <td>OBS Name</td>
+                        <td>OBS Description</td>
+                        <td>hpcloud</td>
+                        <td>nova</td>
+                        <td> created</td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" class="hiddenRow">
+                            <div id="demo3" class="accordian-body collapse">Demo3</div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!--<script>-->
+    <!--$('.collapse').on('show.bs.collapse', function () {-->
+    <!--var groupId = $('#expander').attr('data-group-id');-->
+    <!--if (groupId) {-->
+    <!--$('#grandparentIcon').html('V');-->
+    <!--}-->
+    <!--});-->
+
+    <!--$('.collapse').on('hide.bs.collapse', function () {-->
+    <!--var groupId = $('#expander').attr('data-group-id');-->
+    <!--if (groupId) {-->
+    <!--$('#' + groupId + 'Icon').html('>');-->
+    <!--}-->
+    <!--});-->
+
+    <!--    </script>-->
+
+    <script>
+
+        /*<![CDATA[*/
+
+        //
+        // Updates "Select all" control in a data table
+        //
+        function updateDataTableSelectAllCtrl(table) {
+            var $table = table.table().node();
+            var $chkbox_all = $('tbody input[type="checkbox"]', $table);
+            var $chkbox_checked = $('tbody input[type="checkbox"]:checked', $table);
+            var chkbox_select_all = $('thead input[name="select_all"]', $table).get(0);
+
+            // If none of the checkboxes are checked
+            if ($chkbox_checked.length === 0) {
+                chkbox_select_all.checked = false;
+                if ('indeterminate' in chkbox_select_all) {
+                    chkbox_select_all.indeterminate = false;
+                }
+
+                // If all of the checkboxes are checked
+            } else if ($chkbox_checked.length === $chkbox_all.length) {
+                chkbox_select_all.checked = true;
+                if ('indeterminate' in chkbox_select_all) {
+                    chkbox_select_all.indeterminate = false;
+                }
+
+                // If some of the checkboxes are checked
+            } else {
+                chkbox_select_all.checked = true;
+                if ('indeterminate' in chkbox_select_all) {
+                    chkbox_select_all.indeterminate = true;
+                }
+            }
+        }
+
+        function tableCreation() {
+// Array holding selected row IDs
+            var rows_selected = [];
+
+            var table = $('#example').DataTable({
+                'columnDefs': [{
+                    'targets': 0,
+                    'searchable': false,
+                    'orderable': false,
+                    'width': '1%',
+                    'className': 'dt-body-center',
+                    'render': function (data, type, full, meta) {
+                        return '<input type="checkbox">';
+                    }
+                }],
+                'order': [2, 'asc'],
+                'rowCallback': function (row, data, dataIndex) {
+                    // Get row ID
+                    var rowId = data[0];
+
+                    // If row ID is in the list of selected row IDs
+                    if ($.inArray(rowId, rows_selected) !== -1) {
+                        $(row).find('input[type="checkbox"]').prop('checked', true);
+                        $(row).addClass('selected');
+                    }
+                },
+                "drawCallback": function (settings) {
+                    var api = this.api();
+                    var rows = api.rows({page: 'current'}).nodes();
+                    var last = null;
+
+                    var wbsIdColumn = api.column(1, {page: 'current'}).data();
+                    var wbsCodeColumn = api.column(3, {page: 'current'}).data();
+
+                    var groupadmin = [];
+
+                    api.column(2, {page: 'current'}).data().each(function (group, i) {
+                        if (last !== group) {
+                            $(rows).eq(i).before(
+                                '<tr class="group" id="' + i + '">' +
+                                '<td>' +
+                                '<button id="button_' + i + '"><span class="glyphicon glyphicon-plus"></span></button>' +
+                                '</td>' +
+                                '<td class="hidden">' + wbsIdColumn[i] + '</td>' +
+                                '<td></td>' +
+                                '<td>' + group + '</td>' +
+                                '<td colspan="3">' + wbsCodeColumn[i] + '</td>' +
+                                '<td>' +
+                                '<button id="editWBS" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addWBSModal">' +
+                                'edit WBS' +
+                                '</button>' +
+                                '</td>' +
+                                '</tr>'
+                            );
+
+                            groupadmin.push(i);
+
+                            last = group;
+                        }
+                    });
+
+                    for (var k = 0; k < groupadmin.length; k++) {
+                        // Code added for adding class to sibling elements as "group_<id>"
+                        var regexp = new RegExp('group_\\d+');
+
+                        var arr = $("#" + groupadmin[k]).nextUntil("#" + groupadmin[k + 1]);
+                        for (var i = 0; i < arr.length; i++) {
+                            arr[i].className = arr[i].className.replace(regexp, "");
+                        }
+                        ;
+                        $("#" + groupadmin[k]).nextUntil("#" + groupadmin[k + 1]).addClass(' group_' + groupadmin[k]);
+                        // Code added for adding Toggle functionality for each group
+                        $("#button_" + groupadmin[k]).off("click");
+                        $("#button_" + groupadmin[k]).click(function () {
+                            var gid = $(this).attr("id").substr(7);
+                            console.log("id:" + $(this).attr("id").substr(7));
+                            $(".group_" + gid).slideToggle(300);
+                        });
+
+                    }
+                },
+                'paging': false
+            });
+
+            // Handle click on edit button
+            $('#example tbody').on('click', 'button', function (e) {
+                if ($(this).attr("id") !== "editWBS") {
+                    return;
+                }
+                var data = $(this).closest('tr');
+                data[0].classList.add("editing");
+                var wbsId = {};
+                wbsId["id"] = data.find('td')[1].innerText;
+                $.ajax({
+                    type: "GET",
+                    url: "/edit_wbs",
+                    data: wbsId,
+                    dataType: 'text',
+                    timeout: 600000,
+                    success: function (result) {
+                        result = JSON.parse(result);
+                        $("#wbsId")[0].value = result["id"];
+                        $("#wbsName")[0].value = result["name"];
+                        $("#wbsCode")[0].value = result["code"];
+                    },
+                    error: function (e) {
+                        console.log("error: " + e.statusText);
+                        data[0].classList.remove("editing");
+//                            alert("fail");
+                    }
+                })
+            });
+
+            // Handle click on checkbox
+            $('#example tbody').on('click', 'input[type="checkbox"]', function (e) {
+                var $row = $(this).closest('tr');
+
+                // Get row data
+                var data = table.row($row).data();
+
+                // Get row ID
+                var rowId = data[0];
+
+                // Determine whether row ID is in the list of selected row IDs
+                var index = $.inArray(rowId, rows_selected);
+
+                // If checkbox is checked and row ID is not in list of selected row IDs
+                if (this.checked && index === -1) {
+                    rows_selected.push(rowId);
+
+                    // Otherwise, if checkbox is not checked and row ID is in list of selected row IDs
+                } else if (!this.checked && index !== -1) {
+                    rows_selected.splice(index, 1);
+                }
+
+                if (this.checked) {
+                    $row.addClass('selected');
+                } else {
+                    $row.removeClass('selected');
+                }
+
+                // Update state of "Select all" control
+                updateDataTableSelectAllCtrl(table);
+
+                // Prevent click event from propagating to parent
+                e.stopPropagation();
+            });
+
+            // Handle click on table cells with checkboxes
+            $('#example').on('click', 'tbody td, thead th:first-child', function (e) {
+                $(this).parent().find('input[type="checkbox"]').trigger('click');
+            });
+
+            // Handle click on "Select all" control
+            $('thead input[name="select_all"]', table.table().container()).on('click', function (e) {
+                if (this.checked) {
+                    $('#example tbody input[type="checkbox"]:not(:checked)').trigger('click');
+                } else {
+                    $('#example tbody input[type="checkbox"]:checked').trigger('click');
+                }
+
+                // Prevent click event from propagating to parent
+                e.stopPropagation();
+            });
+
+            // Handle table draw event
+            table.on('draw', function () {
+                // Update state of "Select all" control
+                updateDataTableSelectAllCtrl(table);
+            });
+
+//
+//            // Handle form submission event
+//            $('#frm-example').on('submit', function(e){
+//                var form = this;
+//
+//                // Iterate over all selected checkboxes
+//                $.each(rows_selected, function(index, rowId){
+//                    // Create a hidden element
+//                    $(form).append(
+//                        $('<input>')
+//                            .attr('type', 'hidden')
+//                            .attr('name', 'id[]')
+//                            .val(rowId)
+//                    );
+//                });
+//
+//                // FOR DEMONSTRATION ONLY
+//
+//                // Output form data to a console
+//                $('#example-console').text($(form).serialize());
+//                console.log("Form submission", $(form).serialize());
+//
+//                // Remove added elements
+//                $('input[name="id\[\]"]', form).remove();
+//
+//                // Prevent actual form submission
+//                e.preventDefault();
+//            });
+        }
+        $(document).ready(function () {
+            tableCreation();
+        });
+
+        /*]]>*/
+
+    </script>
+
+    <script>
+
+        /*<![CDATA[*/
+
+        jQuery(document).ready(
+            function ($) {
+
+                $("#addWBSSubmit").click(function (event) {
+                    var table = $("#example").DataTable();
+                    var wbs = {};
+                    wbs["projectId"] = document.URL.substr(document.URL.lastIndexOf('/') + 1);
+                    wbs["id"] = $("#wbsId").val();
+                    wbs["name"] = $("#wbsName").val();
+                    wbs["code"] = $("#wbsCode").val();
+                    $.ajax({
+                        type: "POST",
+                        contentType: "application/json",
+                        url: "/add_wbs",
+                        data: JSON.stringify(wbs),
+//                        dataType: 'json',
+                        timeout: 600000,
+//                        TODO: хранить в result id?
+                        success: function (result) {
+                            $("#addWBSModal").modal("hide");
+                            if ($("#wbsId").val() === "") {
+                                var rowNode = table.row.add(
+                                    ["", result, wbs["name"], wbs["code"], "", "", "", "", "", ""]
+                                );
+                                table.draw();
+                                rowNode.node().classList.add('hidden')
+                            } else {
+                                var editedRow = $("#example").find(".editing");
+                                var editedRowId = editedRow.attr("id");
+
+                                var activities = $("#" + editedRowId).nextUntil("#" + + (editedRowId + 1));
+                                for (var i = 0; i < activities.length; i++) {
+                                    table.cell(activities[i], 2).data(wbs["name"]);
+                                    table.cell(activities[i], 3).data(wbs["code"]);
+//                                    activities.find("td")[2].innerText = wbs["name"];
+//                                    activities.find("td")[3].innerText = wbs["code"];
+                                }
+
+                                editedRow.find("td")[1].innerText = wbs["id"];
+                                editedRow.find("td")[3].innerText = wbs["name"];
+                                editedRow.find("td")[4].innerText = wbs["code"];
+                                $("#example").find(".editing").removeClass("editing");
+                                //TODO изменять все зависимые activities
+                            }
+                            $("#addWBSModal").find("input,textarea,select").val('').end();
+                        },
+                        error: function (e) {
+                            console.log("error: " + e.statusText);
+//                            alert("fail");
+                        }
+                    })
+                })
+            }
+        )
+
+        /*]]>*/
+
+    </script>
+
+</div>
+</body>
+</html>

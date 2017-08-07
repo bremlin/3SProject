@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ibcon.sproject.domain.smet.EstimateSmet;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.hibernate.annotations.Proxy;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
@@ -17,7 +18,8 @@ import java.util.Set;
 @EntityScan
 @Entity
 @Table(name = "wbs")
-@EqualsAndHashCode(exclude = "project")
+@EqualsAndHashCode(exclude = {"project", "activities", "wbsSet", "estimateSmets"})
+@ToString(exclude = {"project", "activities", "wbsSet", "estimateSmets"})
 public @Data class WBS extends AbstractDomainClass {
 //    private Integer projectId;
     private Integer projectObjectId;

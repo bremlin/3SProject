@@ -8,8 +8,10 @@ import com.ibcon.sproject.converters.smettojson.SmetJsonTree;
 import com.ibcon.sproject.converters.smettojson.SmetTypeJson;
 import com.ibcon.sproject.converters.wbstojson.WBSJson;
 import com.ibcon.sproject.converters.wbstojson.WBSJSONTree;
+import com.ibcon.sproject.domain.Project;
 import com.ibcon.sproject.domain.WBS;
 import com.ibcon.sproject.domain.mixins.WBSInnerObjectsMixin;
+import com.ibcon.sproject.domain.smet.EstimateSmet;
 import com.ibcon.sproject.services.crud.activity.ActivityService;
 import com.ibcon.sproject.services.crud.estimatesmet.EstimateSmetService;
 import com.ibcon.sproject.services.crud.project.ProjectService;
@@ -18,15 +20,14 @@ import com.ibcon.sproject.services.crud.user.UserServiceCrud;
 import com.ibcon.sproject.services.crud.wbs.WBSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
-public class TestTableController {
+public class MainTableController {
     private UserServiceCrud userServiceCrud;
     private RoleService roleService;
     private ProjectService projectService;
@@ -88,10 +89,6 @@ public class TestTableController {
 
     @RequestMapping(value = "/get_wbs_list", produces = "application/json")
     public ResponseEntity<?> getWbsList(@RequestParam("id") String id) throws JsonProcessingException {
-//        List<WBS> wbsList = wbsService.findByProjectId(Integer.valueOf(id));
-//
-//        WBSJSONTree WBSJSONTree = new WBSJSONTree(wbsList);
-//        List<WBSJson> wbsJsonList = WBSJSONTree.getWbsJsonList();
         List<WBSJson> wbsJsonList = wbsJsonTree.convertProjectWBSList(Integer.valueOf(id));
 
         ObjectMapper mapper = new ObjectMapper();
@@ -108,7 +105,50 @@ public class TestTableController {
     @RequestMapping(value = "/get_smet", produces = "application/json")
     public ResponseEntity<?> getSmet(@RequestParam("id") String id) throws JsonProcessingException {
         //TODO replace hardcoded values with tests
-        List<SmetTypeJson> smetTypeJsonList = smetJsonTree.convertSmetToJson(1);
+        List<SmetTypeJson> smetTypeJsonList = new ArrayList<>();
+        smetTypeJsonList.add(smetJsonTree.convertSmetToJson(Integer.valueOf(id)));
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        mapper.registerModule(new JodaModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        String result = mapper.writeValueAsString(smetTypeJsonList);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/get_smet_by_project", produces = "application/json")
+    public ResponseEntity<?> getSmetByProject(@RequestParam("id") String id) throws JsonProcessingException {
+        Project project = projectService.getById(Integer.valueOf(id));
+
+        if (project == null) {
+            //TODO
+        }
+
+//        List<Integer> wbsIdList = project.getWbsSet().stream().map(WBS::getId).collect(Collectors.toList());
+
+//        List<EstimateSmet> smets = estimateSmetService.findAllByWbsSetId(project.getWbsSet());
+
+        Set<EstimateSmet> smets = new HashSet<>();
+//        project.getWbsSet().forEach(wbs -> smets.addAll(estimateSmetService.findAllByWbsSetId(project.getWbsSet())));
+        Set<WBS> wbsSet = project.getWbsSet();
+        if (wbsSet != null) {
+//            wbsSet.forEach(wbs -> smets.addAll(estimateSmetService.findAllByWbsId(wbs.getId())));
+//            wbsSet.forEach(wbs -> smets.addAll(wbsService.findEstimateSmetsByWbsId(wbs.getId())));
+
+            wbsSet.forEach(wbs -> smets.addAll(estimateSmetService.findByWbsSetId(wbs.getId())));
+
+
+
+        }
+
+        if (smets == null) {
+            //TODO
+        }
+
+        List<SmetTypeJson> smetTypeJsonList = new ArrayList<>();
+        smets.forEach(smet -> smetTypeJsonList.add(smetJsonTree.convertSmetToJson(smet.getId())));
 
         ObjectMapper mapper = new ObjectMapper();
 
