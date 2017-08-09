@@ -126,21 +126,10 @@ public class MainTableController {
             //TODO
         }
 
-//        List<Integer> wbsIdList = project.getWbsSet().stream().map(WBS::getId).collect(Collectors.toList());
-
-//        List<EstimateSmet> smets = estimateSmetService.findAllByWbsSetId(project.getWbsSet());
-
         Set<EstimateSmet> smets = new HashSet<>();
-//        project.getWbsSet().forEach(wbs -> smets.addAll(estimateSmetService.findAllByWbsSetId(project.getWbsSet())));
         Set<WBS> wbsSet = project.getWbsSet();
         if (wbsSet != null) {
-//            wbsSet.forEach(wbs -> smets.addAll(estimateSmetService.findAllByWbsId(wbs.getId())));
-//            wbsSet.forEach(wbs -> smets.addAll(wbsService.findEstimateSmetsByWbsId(wbs.getId())));
-
             wbsSet.forEach(wbs -> smets.addAll(estimateSmetService.findByWbsSetId(wbs.getId())));
-
-
-
         }
 
         if (smets == null) {
