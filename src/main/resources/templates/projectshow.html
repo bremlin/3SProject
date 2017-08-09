@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head  lang="ru">
+    <title>Проект</title>
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+</head>
+<body>
+<div class="container">
+    <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+    <h2>Project Details</h2>
+    <div>
+        <form class="form-horizontal" th:object="${project}">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Project Id:</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static" th:text="*{id}">User Id</p></div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Project Object Id:</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static" th:text="*{projectObjectId}">User Id</p></div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Primavera Id:</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static" th:text="*{primaveraId}">User Id</p></div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Project Name:</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static" th:text="*{projectName}">User Id</p></div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Project DB Name:</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static" th:text="*{projectDbName}">User Id</p></div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Project Wbs Id:</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static" th:text="*{projectWbsId}">User Id</p></div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Project Code:</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static" th:text="*{projectCode}">User Id</p></div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Config Id:</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static" th:text="*{configId}">User Id</p></div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Index Number:</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static" th:text="*{indexNumber}">User Id</p></div>
+            </div>
+            <div class="form-group" th:each="role : *{roles}">
+                <label class="col-sm-2 control-label">Project Rule:</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static" th:text="${role}">User Group</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Открыть проект</label>
+                <div class="col-sm-10">
+                    <a th:href="${'/project_view/' + project.id}">Открыть проект</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
