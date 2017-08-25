@@ -7,7 +7,7 @@ public class HeaderNode extends SmetTreeNode {
     private int chapterId;
 
     public HeaderNode(String caption) {
-        this.name = (name != null) ? name : "";
+        this.name = (caption != null) ? caption : "";
         this.isHeader = true;
     }
 
