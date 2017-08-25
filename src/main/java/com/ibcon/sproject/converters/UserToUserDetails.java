@@ -21,7 +21,6 @@ public class UserToUserDetails implements Converter<User, UserDetails> {
         if (user != null) {
             userDetails.setUsername(user.getName());
             userDetails.setPassword(user.getEncryptedPassword());
-            //TODO работает? -да
             userDetails.setActive(user.isActive());
             Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
             user.getRoles().forEach(role -> {

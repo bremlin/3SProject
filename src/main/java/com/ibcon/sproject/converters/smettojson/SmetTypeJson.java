@@ -117,7 +117,9 @@ public @Data class SmetTypeJson {
 
     public void addChildren(SmetTypeJson smetTypeJson) {
         smetTypeJson.setParentId(this.id);
-        this.w2ui = new W2uiChildren();
+        if (this.w2ui == null) {
+            this.w2ui = new W2uiChildren();
+        }
         w2ui.addChildren(smetTypeJson);
     }
 }

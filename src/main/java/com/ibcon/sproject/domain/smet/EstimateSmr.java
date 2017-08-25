@@ -86,15 +86,23 @@ public @Data class EstimateSmr extends AbstractDomainClass {
     private BigDecimal tzmCost;
 
 
-    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "chapter_id")
     private EstimateChapter chapter;
 
-    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "header_id")
     private EstimateHeader header;
 
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "smet_id")
     private EstimateSmet smet;
+
+    public void addHeader(EstimateHeader header) {
+        this.header = header;
+    }
+
+    public void addChapter(EstimateChapter chapter) {
+        this.chapter = chapter;
+    }
 }

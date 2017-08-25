@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @EntityScan
@@ -26,6 +27,8 @@ class EstimateSmet extends AbstractDomainClass {
 
     @Column(columnDefinition = "tinyint")
     private Integer isVirtual;
+
+    private String filePath;
 
     private String comment;
 
@@ -65,11 +68,11 @@ class EstimateSmet extends AbstractDomainClass {
     @Column(name = "tzm", columnDefinition = "decimal")
     private BigDecimal tzm;
 
-    @OneToMany(mappedBy = "smet")
-    private Set<EstimateChapter> chapters;
+    @OneToMany(mappedBy = "smet", cascade = CascadeType.PERSIST)
+    private Set<EstimateChapter> chapters = new HashSet<>();
 
-    @OneToMany(mappedBy = "smet")
-    private Set<EstimateHeader> headers;
+    @OneToMany(mappedBy = "smet", cascade = CascadeType.PERSIST)
+    private Set<EstimateHeader> headers = new HashSet<>();
 
     @OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_create")
@@ -89,6 +92,37 @@ class EstimateSmet extends AbstractDomainClass {
     @JsonBackReference
     private Set<WBS> wbsSet = new HashSet<>();
 
-    @OneToMany(mappedBy = "smet")
+    @OneToMany(mappedBy = "smet", cascade = CascadeType.PERSIST)
     private Set<EstimateSmr> smrSet = new HashSet<>();
+
+    public void addChapter(EstimateChapter chapter) {
+        this.chapters.add(chapter);
+        chapter.setSmet(this);
+    }
+
+    public void addHeader(EstimateHeader header, Integer chapterId) {
+        this.headers.add(header);
+        header.setSmet(this);
+
+        EstimateChapter chapter = findChapterById(chapterId);
+        if (chapter != null) {
+            chapter.addHeader(header);
+        }
+
+    }
+
+    private EstimateChapter findChapterById(Integer chapterId) {
+        for(EstimateChapter chapter : chapters) {
+            if (chapterId.equals(chapter.getId())) {
+                return chapter;
+            }
+        }
+
+        return null;
+    }
+
+    public void addSmr(EstimateSmr smr) {
+        this.smrSet.add(smr);
+        smr.setSmet(this);
+    }
 }

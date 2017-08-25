@@ -9,6 +9,7 @@ public class SmetTreeNode extends DefaultMutableTreeNode{
     private int         smetId;
     protected String    name;
 
+    //TODO change to BigDecimal
     protected double      oz = 0.0;
     protected double      em = 0.0;
     protected double      zm = 0.0;

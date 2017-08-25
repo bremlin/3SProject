@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @EntityScan
@@ -22,5 +23,10 @@ class EstimateChapter extends AbstractDomainClass {
     private EstimateSmet smet;
 
     @OneToMany(mappedBy = "chapter")
-    private Set<EstimateHeader> headerSet;
+    private Set<EstimateHeader> headerSet = new HashSet<>();
+
+    public void addHeader(EstimateHeader header) {
+        this.getHeaderSet().add(header);
+        header.setChapter(this);
+    }
 }

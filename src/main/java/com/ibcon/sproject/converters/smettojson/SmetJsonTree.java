@@ -58,7 +58,11 @@ public class SmetJsonTree {
     //TODO refactor
     public SmetTypeJson convertSmetToJson(Integer smetId) {
         smet = estimateSmetService.getById(smetId);
-        region = estimateRegionService.getById(smet.getRegion().getId());
+        if (smet.getRegion() == null) {
+            region = new EstimateRegion();
+        } else {
+            region = estimateRegionService.getById(smet.getRegion().getId());
+        }
         chapters = estimateChapterService.findAllBySmetId(smetId);
         List<EstimateHeader> headerList = estimateHeaderService.findAllBySmetId(smetId);
         smrs = estimateSmrService.findAllBySmetId(smetId);
@@ -95,16 +99,25 @@ public class SmetJsonTree {
                     chapterSmrs.forEach(smr -> chapterJson.addChildren(new SmetTypeJson(smr)));
                 }
             });
-        } else {
-            if (!headers.isEmpty()) {
-                headers.get(null).forEach(header -> {
-                    SmetTypeJson headerJson = new SmetTypeJson(header);
-                    root.addChildren(headerJson);
-                    List<EstimateSmr> headerSmrs = estimateSmrService.findAllByHeaderId(header.getId());
-                    headerSmrs.forEach(smr -> headerJson.addChildren(new SmetTypeJson(smr)));
-                });
-            }
+//        } else {
+//            if (!headers.isEmpty()) {
+//                headers.get(null).forEach(header -> {
+//                    SmetTypeJson headerJson = new SmetTypeJson(header);
+//                    root.addChildren(headerJson);
+//                    List<EstimateSmr> headerSmrs = estimateSmrService.findAllByHeaderId(header.getId());
+//                    headerSmrs.forEach(smr -> headerJson.addChildren(new SmetTypeJson(smr)));
+//                });
+//            }
         }
+        if (!headers.isEmpty()) {
+            headers.get(null).forEach(header -> {
+                SmetTypeJson headerJson = new SmetTypeJson(header);
+                root.addChildren(headerJson);
+                List<EstimateSmr> headerSmrs = estimateSmrService.findAllByHeaderId(header.getId());
+                headerSmrs.forEach(smr -> headerJson.addChildren(new SmetTypeJson(smr)));
+            });
+        }
+
 
         return root;
     }
