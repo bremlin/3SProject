@@ -6,10 +6,14 @@
     <script type="text/javascript" src="../js/w2ui-1.5.rc1.min.js"></script>
     <link href="../../static/css/style.css"
           th:href="@{/css/style.css}" rel="stylesheet" media="screen"/>
-    <link href="https://swisnl.github.io/jQuery-contextMenu/dist/jquery.contextMenu.css" rel="stylesheet" type="text/css" />
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://swisnl.github.io/jQuery-contextMenu/dist/jquery.contextMenu.js" type="text/javascript"></script>
-    <script src="https://swisnl.github.io/jQuery-contextMenu/dist/jquery.ui.position.min.js" type="text/javascript"></script>
+    <link href="https://swisnl.github.io/jQuery-contextMenu/dist/jquery.contextMenu.css" rel="stylesheet"
+          type="text/css"/>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css"/>
+    <script src="https://swisnl.github.io/jQuery-contextMenu/dist/jquery.contextMenu.js"
+            type="text/javascript"></script>
+    <script src="https://swisnl.github.io/jQuery-contextMenu/dist/jquery.ui.position.min.js"
+            type="text/javascript"></script>
 </head>
 <body>
 <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
@@ -21,7 +25,7 @@
     $(document).ready(function () {
         $.contextMenu({
             selector: '.act-contextmenu',
-            callback: function(key, options) {
+            callback: function (key, options) {
                 if (key === "addLink") {
                     openAddLinkPopup();
                 }
@@ -33,9 +37,11 @@
                 "paste": {name: "Paste", icon: "paste"},
                 "delete": {name: "Delete", icon: "delete"},
                 "sep1": "---------",
-                "quit": {name: "Quit", icon: function(){
-                    return 'context-menu-icon context-menu-icon-quit';
-                }}
+                "quit": {
+                    name: "Quit", icon: function () {
+                        return 'context-menu-icon context-menu-icon-quit';
+                    }
+                }
             }
         });
     });
@@ -64,7 +70,8 @@
                 toolbar: true,
                 toolbarDelete: true,
                 toolbarEdit: true,
-                footer: true
+                footer: true,
+                expandColumn: false
             },
             onExpand: function (event) {
 //                console.log(this.get(event.recid));
@@ -155,8 +162,7 @@
                 {field: 'cost', caption: 'Cost', size: '10%', sortable: true}
             ],
             onReload: function (event) {
-                //TODO smet by project
-                this.load('/get_wbs_list?id=5');
+                this.load('/get_wbs_list?id=' + document.URL.substr(document.URL.lastIndexOf('/') + 1));
             },
             onRefresh: function (event) {
                 var table = this;
@@ -514,27 +520,49 @@
     var addLinkConfig = {
         grid: {
             name: 'addLinkGrid',
+            show: {
+                toolbar: true,
+                toolbarSave: true
+            },
             columns: [
-                { field: 'checkbox', caption: '?', size: '5%', editable: { type: 'checkbox' } },
-                { field: 'action', caption: 'Действие', tooltip: 'Действие', size: '10%' },
-                { field: 'id', caption: 'ID', tooltip: 'ID', size: '5%' },
-                { field: 'taskName', caption: 'Наименование работы', tooltip: 'Наименование работы', size: '20%' },
-                { field: 'number', caption: '№', tooltip: '№', size: '5%' },
-                { field: 'smetRowName', caption: 'Наименование сметной строки', tooltip: 'Наименование сметной строки', size: '20%' },
-                { field: 'quantity', caption: 'Кол-во по сметной строке', tooltip: 'Кол-во по сметной строке', size: '5%' },
-                { field: 'unit1', caption: 'Ед. изм.', tooltip: 'Ед. изм.', size: '5%' },
-                { field: 'koeff', caption: 'K', tooltip: 'K', size: '5%', editable: { type: 'text' } },
-                { field: 'generalKoeff', caption: 'K общ.', tooltip: 'K общ.', size: '5%', editable: { type: 'text' } },
-                { field: 'physVolume', caption: 'ФО', tooltip: 'ФО', size: '5%', editable: { type: 'checkbox' } },
-                { field: 'mainPhysVolume', caption: 'Основной физ. объем.', tooltip: 'Основной физ. объем.', size: '5%', editable: { type: 'text' } },
-                { field: 'unit2', caption: 'Ед. изм.', tooltip: 'Ед. изм.', size: '5% ' }
+                {field: 'activityId', caption: '', size: '0%', hidden: true },
+                {field: 'smrId', caption: '', size: '0%', hidden: true },
+                {field: 'checkbox', caption: '?', size: '5%', editable: {type: 'checkbox'}},
+                {field: 'action', caption: 'Действие', tooltip: 'Действие', size: '10%'},
+                {field: 'id', caption: 'ID', tooltip: 'ID', size: '5%'},
+                {field: 'taskName', caption: 'Наименование работы', tooltip: 'Наименование работы', size: '20%'},
+                {field: 'number', caption: '№', tooltip: '№', size: '5%'},
+                {
+                    field: 'smetRowName',
+                    caption: 'Наименование сметной строки',
+                    tooltip: 'Наименование сметной строки',
+                    size: '20%'
+                },
+                {
+                    field: 'quantity',
+                    caption: 'Кол-во по сметной строке',
+                    tooltip: 'Кол-во по сметной строке',
+                    size: '5%'
+                },
+                {field: 'unit1', caption: 'Ед. изм.', tooltip: 'Ед. изм.', size: '5%'},
+                {field: 'koeff', caption: 'K', tooltip: 'K', size: '5%', editable: {type: 'text'}},
+                {field: 'generalKoeff', caption: 'K общ.', tooltip: 'K общ.', size: '5%', editable: {type: 'text'}},
+                {field: 'physVolume', caption: 'ФО', tooltip: 'ФО', size: '5%', editable: {type: 'checkbox'}},
+                {
+                    field: 'mainPhysVolume',
+                    caption: 'Основной физ. объем.',
+                    tooltip: 'Основной физ. объем.',
+                    size: '5%',
+                    editable: {type: 'text'}
+                },
+                {field: 'unit2', caption: 'Ед. изм.', tooltip: 'Ед. изм.', size: '5% '}
             ],
             recid: 'id',
             onChange: function (event) {
                 console.log(event);
             },
-            recordHeight : 70,
-            onClick: function(event) {
+            recordHeight: 70,
+            onClick: function (event) {
                 var grid = this;
                 event.onComplete = function () {
                     var sel = grid.getSelection();
@@ -542,6 +570,16 @@
             },
             onReload: function (event) {
 //                this.load('/get_smet_by_project?id=' + document.URL.substr(document.URL.lastIndexOf('/') + 1)); TODO: заменить на links
+            },
+            onSave: function(event) {
+                console.log('saved');
+                console.log(w2ui.addLinkGrid.records);
+//                w2ui.addLinkGrid.records.forEach(function (record) {
+//                    $.post({
+//                        url: '',
+//                        data: record
+//                    })
+//                })
             }
         }
     };
@@ -551,46 +589,49 @@
             && w2ui.smet.getSelection().length > 0
             && w2ui.smet.get(w2ui.smet.getSelection()[0]).type === 'smr') {
             w2popup.open({
-                title   : 'Добавить или изменить связь',
-                width   : 1200,
-                height  : 600,
-                showMax : true,
-                body    : '<div id="addLinkPopup" style="position: absolute; left: 5px; top: 5px; right: 5px; bottom: 5px;"></div>',
-                onOpen  : function (event) {
+                title: 'Добавить или изменить связь',
+                width: 1200,
+                height: 600,
+                showMax: true,
+                body: '<div id="addLinkPopup" style="position: absolute; left: 5px; top: 5px; right: 5px; bottom: 5px;"></div>',
+                onOpen: function (event) {
                     event.onComplete = function () {
                         $.ajax({
-                            url: '/links/' + w2ui.grid.getSelection()[0].substr(1) + '/' +  w2ui.smet.getSelection()[0].substr(1),
+                            url: '/links/' + w2ui.grid.getSelection()[0].substr(1) + '/' + w2ui.smet.getSelection()[0].substr(1),
                             method: 'GET',
                             success: function (result) {
-                                var activity = result.activity;
-                                var smr = result.smr;
+                                var link = result;
+                                var activity = link.activity;
+                                var smr = link.smr;
 
-                                var newRecord = {};
-                                newRecord['checkbox'] = '';
-                                if (result.id === '') {
-                                    newRecord['action'] = 'Добавление';
+                                var newLink = {};
+                                newLink['activityId'] = activity.id;
+                                newLink['smrId'] = smr.id;
+                                newLink['checkbox'] = '';
+                                if (link.id === '') {
+                                    newLink['action'] = 'Добавление';
                                 } else {
-                                    newRecord['action'] = 'Изменение';
+                                    newLink['action'] = 'Изменение';
                                 }
-                                newRecord['id'] = activity['activityId'];
-                                newRecord['taskName'] = activity['activityName'];
-                                newRecord['number'] = smr['num'];
-                                newRecord['smetRowName'] = smr['name'];
-                                newRecord['quantity'] = smr['quantity'];
-                                newRecord['unit1'] = smr['units'];
-                                newRecord['koeff'] = result['factor'];
-                                newRecord['generalKoeff'] = result['fullFactor'];
-                                newRecord['isPhysVolume'] = 'TODO CHECKBOX';
-                                if (result.pvApply) {
-                                    newRecord['physVolume'] = result['volume'];
+                                newLink['id'] = activity['activityId'];
+                                newLink['taskName'] = activity['activityName'];
+                                newLink['number'] = smr['num'];
+                                newLink['smetRowName'] = smr['name'];
+                                newLink['quantity'] = smr['quantity'];
+                                newLink['unit1'] = smr['units'];
+                                newLink['koeff'] = link['factor'];
+                                newLink['generalKoeff'] = link['fullFactor'];
+                                newLink['isPhysVolume'] = 'TODO CHECKBOX';
+                                if (link.pvApply) {
+                                    newLink['physVolume'] = link['volume'];
                                 } else {
-                                    newRecord['physVolume'] = '';
+                                    newLink['physVolume'] = '';
                                 }
-                                newRecord['unit2'] = 'TODO UNITS FROM DB';
+                                newLink['unit2'] = 'TODO UNITS FROM DB';
                                 if (addLinkConfig.grid.records === undefined) {
-                                    addLinkConfig.grid.records = [newRecord]
+                                    addLinkConfig.grid.records = [newLink]
                                 } else {
-                                    addLinkConfig.grid.records.push(newRecord)
+                                    addLinkConfig.grid.records.push(newLink)
                                 }
 
                                 $('#addLinkPopup').w2grid(addLinkConfig.grid);
@@ -598,7 +639,7 @@
                                     w2ui.addLinkGrid.select(record.id);
                                     w2ui.addLinkGrid.delete(true);
                                 });
-                                w2ui.addLinkGrid.add(newRecord);
+                                w2ui.addLinkGrid.add(newLink);
                             }
                         });
 //                    $('#w2ui-popup #addLinkPopup').w2render('layout');

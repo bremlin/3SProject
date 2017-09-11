@@ -106,19 +106,6 @@ public class MainTableController {
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         mapper.addMixIn(Object.class, WBSInnerObjectsMixin.class);
 
-//        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-//        List<LinkedHashMap<String, Object>> resultList = new ArrayList<>();
-//        for (WBSJson wbsJson : wbsJsonList) {
-//            MapType mapType = mapper.getTypeFactory().constructMapType(LinkedHashMap.class,
-//                    String.class, Object.class);
-//
-//            map = mapper.convertValue(wbsJson, mapType);
-//            map.put("class", "activities-contextmenu");
-//            resultList.add(map);
-//        }
-//
-//        String result = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
-//        String result = mapper.writeValueAsString(resultList);
         String result = mapper.writeValueAsString(wbsJsonList);
 
         return ResponseEntity.ok(result);

@@ -21,8 +21,4 @@ public class CommonBeanConfig {
         return new RoleServiceImpl();
     }
 
-    @Bean
-    public UserServiceCrud userServiceCrud() {
-        return new UserServiceCrudImp();
-    }
 }
