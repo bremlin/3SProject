@@ -1,5 +1,6 @@
 package com.ibcon.sproject.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ibcon.sproject.domain.smet.EstimateSmr;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,7 +14,37 @@ import java.math.BigDecimal;
 @Table(name = "link")
 @EqualsAndHashCode(exclude = {"project", "activity", "smr"})
 public @Data class Link extends AbstractDomainClass {
+
+    public Link() {}
+
+    public Link(Activity activity, EstimateSmr smr) {
+        this.actual = true;
+        this.activity = activity;
+        this.smr = smr;
+        this.projectId = activity.getProjectId();
+        this.factor = smr.getFactor();
+        this.fullFactor = smr.getFullFactor();
+        this.pvApply = false;
+        this.volume = smr.getQuantity().divide(fullFactor, 6).multiply(factor);
+        this.tzrVolume = smr.getTzr().divide(fullFactor, 6).multiply(factor);
+        this.mechVolume = smr.getTzm().divide(fullFactor, 6).multiply(factor);
+        this.costEm = smr.getEmCost() == null ? BigDecimal.ZERO : smr.getEmCost();
+        this.costEmm = smr.getCostEmm() == null ? BigDecimal.ZERO : smr.getCostEmm();
+        this.costFot = smr.getCostFot() == null ? BigDecimal.ZERO : smr.getCostFot();
+        this.costKon = smr.getCostKon() == null ? BigDecimal.ZERO : smr.getCostKon();
+        this.costMat = smr.getMtCost() == null ? BigDecimal.ZERO : smr.getMtCost();
+        this.costMtr = smr.getCostMtr() == null ? BigDecimal.ZERO : smr.getCostMtr();
+        this.costSum = smr.getSum() == null ? BigDecimal.ZERO : smr.getSum();
+        this.costOz = smr.getOzCost() == null ? BigDecimal.ZERO : smr.getOzCost();
+        this.costZm = smr.getZmCost() == null ? BigDecimal.ZERO : smr.getZmCost();
+        this.costNr = smr.getNrCost() == null ? BigDecimal.ZERO : smr.getNrCost();
+        this.costSp = smr.getSpCost() == null ? BigDecimal.ZERO : smr.getSpCost();
+        this.rsrcInnerType = 0;
+    }
+
     private Boolean actual;
+
+    private Integer projectId;
 
     @Column(name = "factor", columnDefinition = "decimal")
     private BigDecimal factor;
@@ -68,14 +99,12 @@ public @Data class Link extends AbstractDomainClass {
     private Integer rsrcInnerType;
 
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
-    private Project project;
-
-    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_id")
+//    @JsonBackReference
     private Activity activity;
 
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "smet_row_id")
+//    @JsonBackReference
     private EstimateSmr smr;
 }

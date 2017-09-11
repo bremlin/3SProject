@@ -11,8 +11,6 @@ import javax.persistence.*;
 
 @EntityScan
 @Entity
-//@Proxy(lazy = false)    //без этого не получается достать projectId из wbs перед сохранением
-//@EntityListeners(ActivityListener.class)
 @Table(name = "activities")
 @EqualsAndHashCode(exclude = "wbs")
 @ToString(exclude = "wbs")
@@ -36,6 +34,11 @@ public @Data class Activity extends AbstractDomainClass {
     private Integer statusId;
     private Integer percentageCompletion;
     private Boolean isCritical;
+
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    @JoinTable(name = "rsrc_assignment", joinColumns = @JoinColumn(name = "activity_id"),
+        inverseJoinColumns = @JoinColumn(name = "rsrc_id"))
+    private Resource resource;
 
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "wbs_id")

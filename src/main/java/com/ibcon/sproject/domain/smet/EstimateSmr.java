@@ -1,5 +1,6 @@
 package com.ibcon.sproject.domain.smet;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ibcon.sproject.domain.AbstractDomainClass;
 import com.ibcon.sproject.domain.User;
 import lombok.Data;
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 @EntityScan
 @Entity
 @Table(name = "estimate_Smr")
+@EntityListeners(EstimateSmrToPersistListener.class)
 @EqualsAndHashCode(exclude = {"chapter", "header", "smet"})
 public @Data class EstimateSmr extends AbstractDomainClass {
     private String name;
@@ -85,17 +87,37 @@ public @Data class EstimateSmr extends AbstractDomainClass {
     @Column(name = "tzm_cost", columnDefinition = "decimal")
     private BigDecimal tzmCost;
 
+    @Column(name = "emm_cost", columnDefinition = "decimal")
+    private BigDecimal costEmm;
+
+    @Column(name = "fot_cost", columnDefinition = "decimal")
+    private BigDecimal costFot;
+
+    @Column(name = "mtr_cost", columnDefinition = "decimal")
+    private BigDecimal costMtr;
+
+    @Column(name = "kon_cost", columnDefinition = "decimal")
+    private BigDecimal costKon;
+
+    @Column(name = "factor", columnDefinition = "decimal")
+    private BigDecimal factor = BigDecimal.ZERO;
+
+    @Column(name = "full_factor", columnDefinition = "decimal")
+    private BigDecimal fullFactor = BigDecimal.ONE;
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "chapter_id")
+    @JsonBackReference
     private EstimateChapter chapter;
 
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "header_id")
+    @JsonBackReference
     private EstimateHeader header;
 
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "smet_id")
+    @JsonBackReference
     private EstimateSmet smet;
 
     public void addHeader(EstimateHeader header) {

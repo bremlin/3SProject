@@ -6,6 +6,10 @@
     <script type="text/javascript" src="../js/w2ui-1.5.rc1.min.js"></script>
     <link href="../../static/css/style.css"
           th:href="@{/css/style.css}" rel="stylesheet" media="screen"/>
+    <link href="https://swisnl.github.io/jQuery-contextMenu/dist/jquery.contextMenu.css" rel="stylesheet" type="text/css" />
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://swisnl.github.io/jQuery-contextMenu/dist/jquery.contextMenu.js" type="text/javascript"></script>
+    <script src="https://swisnl.github.io/jQuery-contextMenu/dist/jquery.ui.position.min.js" type="text/javascript"></script>
 </head>
 <body>
 <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
@@ -13,6 +17,28 @@
 </body>
 <script>
     /*<![CDATA[*/
+
+    $(document).ready(function () {
+        $.contextMenu({
+            selector: '.act-contextmenu',
+            callback: function(key, options) {
+                if (key === "addLink") {
+                    openAddLinkPopup();
+                }
+            },
+            items: {
+                "edit": {name: "Редактировать", icon: "edit"},
+                "addLink": {name: "Добавить связь", icon: "fa-plus-square"},
+                copy: {name: "Copy", icon: "copy"},
+                "paste": {name: "Paste", icon: "paste"},
+                "delete": {name: "Delete", icon: "delete"},
+                "sep1": "---------",
+                "quit": {name: "Quit", icon: function(){
+                    return 'context-menu-icon context-menu-icon-quit';
+                }}
+            }
+        });
+    });
 
     var config = {
         layout: {
@@ -38,11 +64,10 @@
                 toolbar: true,
                 toolbarDelete: true,
                 toolbarEdit: true,
-                footer: true,
-                expandColumn: true
+                footer: true
             },
             onExpand: function (event) {
-                console.log(this.get(event.recid));
+//                console.log(this.get(event.recid));
                 if (this.get(event.recid).w2ui.children === undefined) {
                     this.collapse(event.recid);
                 } else {
@@ -65,7 +90,7 @@
             },
             onDelete: function (event) {
                 if (event.force === true) {
-                    console.log(event);
+//                    console.log(event);
                     var sel = this.getSelection();
                     if (sel.length > 0) {
                         var data = {};
@@ -81,7 +106,16 @@
                             data: JSON.stringify(data)
                         });
                     }
-                    console.log('ended');
+//                    console.log('ended');
+                }
+            },
+            onContextMenu: function (event) {
+                event.onComplete = function () {
+                    this.records.forEach(function (record) {
+                        if (record.type === "act") {
+                            $('#grid_grid_rec_' + record.id).addClass("act-contextmenu");
+                        }
+                    })
                 }
             },
             multiselect: true,
@@ -113,7 +147,7 @@
             },
             recid: 'id',
             columns: [
-                {field: 'id', caption: 'Id', size: '10%', hidden: true, sortable: true},
+                {field: 'id', caption: 'Id', size: '10%', sortable: true},
                 {field: 'type', caption: 'Type', size: '0%', hidden: true},
                 {field: 'parentId', caption: 'Parent Id', size: '10%', sortable: true},
                 {field: 'name', caption: 'Name', size: '35%', sortable: true},
@@ -128,7 +162,7 @@
                 var table = this;
                 var records = this.records;
                 records.forEach(function (record) {
-                    console.log(record);
+//                    console.log(record);
                 })
             },
             onClick: function (event) {
@@ -149,7 +183,6 @@
                     padding: '0px',
                     width: '100%'
                 }).animate({height: '500px'}, 100);
-                console.log(this.get(event.recid));
                 if (this.get(event.recid).w2ui.children === undefined) {
                     this.collapse(event.recid);
                 }
@@ -160,7 +193,7 @@
                     {type: 'break'}
                 ],
                 onClick: function (target, data) {
-                    console.log(target);
+//                    console.log(target);
                 },
                 onRefresh: function () {
                     this.remove("w2ui-reload");
@@ -282,7 +315,7 @@
             height: 300,
             showMax: true,
             onToggle: function (event) {
-                console.log(event);
+//                console.log(event);
                 $(w2ui.addWbsForm.box).hide();
                 event.onComplete = function () {
                     $(w2ui.addWbsForm.box).show();
@@ -290,9 +323,8 @@
                 }
             },
             onOpen: function (event) {
-                console.log(event);
+//                console.log(event);
                 event.onComplete = function () {
-                    // specifying an onOpen handler instead is equivalent to specifying an onBeforeOpen handler, which would make this code execute too early and hence not deliver.
                     $('#w2ui-popup #form').w2render('addWbsForm');
                 }
             }
@@ -386,7 +418,6 @@
             },
             onOpen: function (event) {
                 event.onComplete = function () {
-                    // specifying an onOpen handler instead is equivalent to specifying an onBeforeOpen handler, which would make this code execute too early and hence not deliver.
                     $('#w2ui-popup #actForm').w2render('actForm');
                 }
             }
@@ -447,7 +478,7 @@
 
         w2ui['grid'].load('/get_wbs_list?id=' + document.URL.substr(document.URL.lastIndexOf('/') + 1), function () {
             for (var idx in expanded_ids) {
-                console.log(expanded_ids[idx]);
+//                console.log(expanded_ids[idx]);
                 w2ui['grid'].expand(expanded_ids[idx]);
             }
             w2ui['grid'].last.scrollTop = st;
@@ -479,6 +510,112 @@
             }
         });
     });
+
+    var addLinkConfig = {
+        grid: {
+            name: 'addLinkGrid',
+            columns: [
+                { field: 'checkbox', caption: '?', size: '5%', editable: { type: 'checkbox' } },
+                { field: 'action', caption: 'Действие', tooltip: 'Действие', size: '10%' },
+                { field: 'id', caption: 'ID', tooltip: 'ID', size: '5%' },
+                { field: 'taskName', caption: 'Наименование работы', tooltip: 'Наименование работы', size: '20%' },
+                { field: 'number', caption: '№', tooltip: '№', size: '5%' },
+                { field: 'smetRowName', caption: 'Наименование сметной строки', tooltip: 'Наименование сметной строки', size: '20%' },
+                { field: 'quantity', caption: 'Кол-во по сметной строке', tooltip: 'Кол-во по сметной строке', size: '5%' },
+                { field: 'unit1', caption: 'Ед. изм.', tooltip: 'Ед. изм.', size: '5%' },
+                { field: 'koeff', caption: 'K', tooltip: 'K', size: '5%', editable: { type: 'text' } },
+                { field: 'generalKoeff', caption: 'K общ.', tooltip: 'K общ.', size: '5%', editable: { type: 'text' } },
+                { field: 'physVolume', caption: 'ФО', tooltip: 'ФО', size: '5%', editable: { type: 'checkbox' } },
+                { field: 'mainPhysVolume', caption: 'Основной физ. объем.', tooltip: 'Основной физ. объем.', size: '5%', editable: { type: 'text' } },
+                { field: 'unit2', caption: 'Ед. изм.', tooltip: 'Ед. изм.', size: '5% ' }
+            ],
+            recid: 'id',
+            onChange: function (event) {
+                console.log(event);
+            },
+            recordHeight : 70,
+            onClick: function(event) {
+                var grid = this;
+                event.onComplete = function () {
+                    var sel = grid.getSelection();
+                }
+            },
+            onReload: function (event) {
+//                this.load('/get_smet_by_project?id=' + document.URL.substr(document.URL.lastIndexOf('/') + 1)); TODO: заменить на links
+            }
+        }
+    };
+
+    function openAddLinkPopup() {
+        if (w2ui.grid.getSelection().length > 0
+            && w2ui.smet.getSelection().length > 0
+            && w2ui.smet.get(w2ui.smet.getSelection()[0]).type === 'smr') {
+            w2popup.open({
+                title   : 'Добавить или изменить связь',
+                width   : 1200,
+                height  : 600,
+                showMax : true,
+                body    : '<div id="addLinkPopup" style="position: absolute; left: 5px; top: 5px; right: 5px; bottom: 5px;"></div>',
+                onOpen  : function (event) {
+                    event.onComplete = function () {
+                        $.ajax({
+                            url: '/links/' + w2ui.grid.getSelection()[0].substr(1) + '/' +  w2ui.smet.getSelection()[0].substr(1),
+                            method: 'GET',
+                            success: function (result) {
+                                var activity = result.activity;
+                                var smr = result.smr;
+
+                                var newRecord = {};
+                                newRecord['checkbox'] = '';
+                                if (result.id === '') {
+                                    newRecord['action'] = 'Добавление';
+                                } else {
+                                    newRecord['action'] = 'Изменение';
+                                }
+                                newRecord['id'] = activity['activityId'];
+                                newRecord['taskName'] = activity['activityName'];
+                                newRecord['number'] = smr['num'];
+                                newRecord['smetRowName'] = smr['name'];
+                                newRecord['quantity'] = smr['quantity'];
+                                newRecord['unit1'] = smr['units'];
+                                newRecord['koeff'] = result['factor'];
+                                newRecord['generalKoeff'] = result['fullFactor'];
+                                newRecord['isPhysVolume'] = 'TODO CHECKBOX';
+                                if (result.pvApply) {
+                                    newRecord['physVolume'] = result['volume'];
+                                } else {
+                                    newRecord['physVolume'] = '';
+                                }
+                                newRecord['unit2'] = 'TODO UNITS FROM DB';
+                                if (addLinkConfig.grid.records === undefined) {
+                                    addLinkConfig.grid.records = [newRecord]
+                                } else {
+                                    addLinkConfig.grid.records.push(newRecord)
+                                }
+
+                                $('#addLinkPopup').w2grid(addLinkConfig.grid);
+                                w2ui.addLinkGrid.records.forEach(function (record) {
+                                    w2ui.addLinkGrid.select(record.id);
+                                    w2ui.addLinkGrid.delete(true);
+                                });
+                                w2ui.addLinkGrid.add(newRecord);
+                            }
+                        });
+//                    $('#w2ui-popup #addLinkPopup').w2render('layout');
+//                    w2ui.layout.content('left', w2ui.grid);
+//                    w2ui.layout.content('main', w2ui.form);
+                    };
+                },
+                onClose: function (event) {
+                    event.onComplete = function () {
+                        w2ui.addLinkGrid.destroy();
+                    }
+                }
+            });
+        } else {
+            w2alert('Выберите сметную строку');
+        }
+    }
 
     /*]]>*/
 </script>

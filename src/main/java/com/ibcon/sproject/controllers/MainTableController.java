@@ -6,25 +6,28 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.ibcon.sproject.converters.smettojson.SmetJsonTree;
 import com.ibcon.sproject.converters.smettojson.SmetTypeJson;
-import com.ibcon.sproject.converters.wbstojson.WBSJson;
 import com.ibcon.sproject.converters.wbstojson.WBSJSONTree;
+import com.ibcon.sproject.converters.wbstojson.WBSJson;
+import com.ibcon.sproject.domain.Link;
 import com.ibcon.sproject.domain.Project;
 import com.ibcon.sproject.domain.WBS;
 import com.ibcon.sproject.domain.mixins.WBSInnerObjectsMixin;
 import com.ibcon.sproject.domain.smet.EstimateSmet;
 import com.ibcon.sproject.services.crud.activity.ActivityService;
 import com.ibcon.sproject.services.crud.estimatesmet.EstimateSmetService;
+import com.ibcon.sproject.services.crud.link.LinkService;
 import com.ibcon.sproject.services.crud.project.ProjectService;
 import com.ibcon.sproject.services.crud.role.RoleService;
 import com.ibcon.sproject.services.crud.user.UserServiceCrud;
 import com.ibcon.sproject.services.crud.wbs.WBSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 public class MainTableController {
@@ -34,6 +37,7 @@ public class MainTableController {
     private WBSService wbsService;
     private ActivityService activityService;
     private EstimateSmetService estimateSmetService;
+    private LinkService linkService;
 
     private WBSJSONTree wbsJsonTree;
     private SmetJsonTree smetJsonTree;
@@ -69,6 +73,11 @@ public class MainTableController {
     }
 
     @Autowired
+    public void setLinkService(LinkService linkService) {
+        this.linkService = linkService;
+    }
+
+    @Autowired
     public void setWBSJSONTree(WBSJSONTree wbsJsonTree) {
         this.wbsJsonTree = wbsJsonTree;
     }
@@ -97,6 +106,19 @@ public class MainTableController {
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         mapper.addMixIn(Object.class, WBSInnerObjectsMixin.class);
 
+//        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+//        List<LinkedHashMap<String, Object>> resultList = new ArrayList<>();
+//        for (WBSJson wbsJson : wbsJsonList) {
+//            MapType mapType = mapper.getTypeFactory().constructMapType(LinkedHashMap.class,
+//                    String.class, Object.class);
+//
+//            map = mapper.convertValue(wbsJson, mapType);
+//            map.put("class", "activities-contextmenu");
+//            resultList.add(map);
+//        }
+//
+//        String result = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
+//        String result = mapper.writeValueAsString(resultList);
         String result = mapper.writeValueAsString(wbsJsonList);
 
         return ResponseEntity.ok(result);
@@ -145,6 +167,18 @@ public class MainTableController {
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         String result = mapper.writeValueAsString(smetTypeJsonList);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping(value = "/links/{activityId}/{smrId}", produces = "application/json")
+    public ResponseEntity<?> getLink(@PathVariable("activityId") String activityId,
+                                     @PathVariable("smrId") String smrId) throws JsonProcessingException {
+        Link link = linkService.findByActivityIdAndSmrId(Integer.valueOf(activityId), Integer.valueOf(smrId));
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        String result = mapper.writeValueAsString(link);
 
         return ResponseEntity.ok(result);
     }
