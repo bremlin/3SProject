@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.ibcon</groupId>
-	<artifactId>factage_web</artifactId>
+	<artifactId>sproject</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
-	<name>factage_web</name>
+	<name>sproject</name>
 	<description></description>
 
 	<parent>
@@ -21,7 +21,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<start-class>com.ibcon.factage_web.FactageWebApplication</start-class>
+		<start-class>com.ibcon.sproject.SprojectWebApplication</start-class>
 		<java.version>1.8</java.version>
 	</properties>
 
@@ -108,6 +108,44 @@
 			<artifactId>lombok</artifactId>
 			<version>1.16.16</version>
 			<scope>provided</scope>
+		</dependency>
+
+		<!--XML-->
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom2</artifactId>
+			<version>2.0.6</version>
+		</dependency>
+
+		<!--MathParser-->
+		<dependency>
+			<groupId>bsh</groupId>
+			<artifactId>bsh</artifactId>
+			<version>2.0b4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.9.9</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jadira.usertype</groupId>
+			<artifactId>usertype.core</artifactId>
+			<version>5.0.0.GA</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.jaxrs</groupId>
+			<artifactId>jackson-jaxrs-json-provider</artifactId>
+			<version>2.2.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-joda</artifactId>
 		</dependency>
 	</dependencies>
 

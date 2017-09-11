@@ -15,6 +15,7 @@
                                 <li><a th:href="@{/login}" sec:authorize="not isAuthenticated()">Log in</a></li>
                                 <li><a th:href="@{/projects}" sec:authorize="isAuthenticated()">Проекты</a></li>
                                 <li><a href="#" th:href="@{/users}" sec:authorize="hasAuthority('ADMIN')">Пользователи</a></li>
+                                <li><a href="#" th:href="@{/project/new}" sec:authorize="hasAuthority('ADMIN')">Создать проект</a></li>
                                 <li><a href="#" th:href="@{/user/new}" sec:authorize="hasAuthority('ADMIN')">Создать пользователя</a></li>
                             </ul>
 
@@ -28,19 +29,6 @@
                             <input type="submit" value="Sign Out" />
                        </span>
                     </form>
-                </div>
-                <div class="jumbotron">
-                    <div class="row text-center">
-                        <div class="">
-                            <h2>Панель управления</h2>
-
-                            <h3>Управление пользователями</h3>
-                        </div>
-                    </div>
-                    <div class="row text-center">
-                        <img src="../../static/images/user_header.gif"
-                             th:src="@{/images/user_header.gif}"/>
-                    </div>
                 </div>
             </div>
         </div>
