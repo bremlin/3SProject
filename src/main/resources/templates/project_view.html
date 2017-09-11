@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+    <link rel="stylesheet" type="text/css" href="../css/w2ui-1.5.rc1.min.css"/>
+    <script type="text/javascript" src="../js/w2ui-1.5.rc1.min.js"></script>
+    <link href="../../static/css/style.css"
+          th:href="@{/css/style.css}" rel="stylesheet" media="screen"/>
+    <link href="https://swisnl.github.io/jQuery-contextMenu/dist/jquery.contextMenu.css" rel="stylesheet"
+          type="text/css"/>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css"/>
+    <script src="https://swisnl.github.io/jQuery-contextMenu/dist/jquery.contextMenu.js"
+            type="text/javascript"></script>
+    <script src="https://swisnl.github.io/jQuery-contextMenu/dist/jquery.ui.position.min.js"
+            type="text/javascript"></script>
+</head>
+<body>
+<!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+<div id="main" style="width: 100%; height: 500px;"></div>
+</body>
+<script>
+    /*<![CDATA[*/
+
+    $(document).ready(function () {
+        $.contextMenu({
+            selector: '.act-contextmenu',
+            callback: function (key, options) {
+                if (key === "addLink") {
+                    openAddLinkPopup();
+                }
+            },
+            items: {
+                "edit": {name: "Редактировать", icon: "edit"},
+                "addLink": {name: "Добавить связь", icon: "fa-plus-square"},
+                copy: {name: "Copy", icon: "copy"},
+                "paste": {name: "Paste", icon: "paste"},
+                "delete": {name: "Delete", icon: "delete"},
+                "sep1": "---------",
+                "quit": {
+                    name: "Quit", icon: function () {
+                        return 'context-menu-icon context-menu-icon-quit';
+                    }
+                }
+            }
+        });
+    });
+
+    var config = {
+        layout: {
+            name: 'layout',
+            padding: 5,
+            panels: [
+                {type: 'left', size: '35%'/*, resizable: true, minSize: 300*/},
+                {type: 'right', size: '65%'/*, resizable: true, minSize: 300*/}
+            ]
+        },
+        actLayout: {
+            name: 'actLayout',
+            padding: 5,
+            panels: [
+                {type: 'top', size: '80%'},
+                {type: 'left', size: '100%'}
+            ]
+        },
+        activities: {
+            name: 'grid',
+            show: {
+                selectColumn: true,
+                toolbar: true,
+                toolbarDelete: true,
+                toolbarEdit: true,
+                footer: true,
+                expandColumn: false
+            },
+            onExpand: function (event) {
+//                console.log(this.get(event.recid));
+                if (this.get(event.recid).w2ui.children === undefined) {
+                    this.collapse(event.recid);
+                } else {
+                    jQuery('#' + event.box_id).css({
+                        margin: '0px',
+                        padding: '0px',
+                        width: '100%'
+                    }).animate({height: '500px'}, 100);
+                }
+            },
+            onEdit: function (event) {
+                var sel = this.getSelection();
+                if (sel.length === 1) {
+                    if (this.get(sel[0]).type === 'wbs') {
+                        editWbsPopup(this);
+                    } else if (this.get(sel[0]).type === 'act') {
+                        editActPopup(this);
+                    }
+                }
+            },
+            onDelete: function (event) {
+                if (event.force === true) {
+//                    console.log(event);
+                    var sel = this.getSelection();
+                    if (sel.length > 0) {
+                        var data = {};
+                        data.idList = [];
+                        for (var idx in sel) {
+                            data.idList.push(sel[idx]);
+                        }
+//                        data.id = this.get(sel[0]).id;
+                        $.ajax({
+                            type: "POST",
+                            contentType: "application/json",
+                            url: "/delete_wbs",
+                            data: JSON.stringify(data)
+                        });
+                    }
+//                    console.log('ended');
+                }
+            },
+            onContextMenu: function (event) {
+                event.onComplete = function () {
+                    this.records.forEach(function (record) {
+                        if (record.type === "act") {
+                            $('#grid_grid_rec_' + record.id).addClass("act-contextmenu");
+                        }
+                    })
+                }
+            },
+            multiselect: true,
+            multiSearch: true,
+            searches: [
+                {field: 'id', caption: 'Id', type: 'int'},
+                {field: 'parentId', caption: 'Parent Id', type: 'int'},
+                {field: 'type', caption: 'type', type: 'list', options: {items: ['wbs', 'act']}},
+                {field: 'name', caption: 'Name', type: 'text'},
+                {field: 'code', caption: 'Code', type: 'text'},
+                {field: 'cost', caption: 'Cost', type: 'float'}
+            ],
+            toolbar: {
+                items: [
+                    {type: 'break'},
+                    {type: 'button', id: 'addWbsButton', caption: 'Add wbs', img: 'w2ui-icon-plus'},
+                    {type: 'button', id: 'addActButton', caption: 'Add activity', img: 'w2ui-icon-plus'}
+                ],
+                onClick: function (target, data) {
+                    if (target === 'addWbsButton') {
+                        addWbsPopup();
+                    } else if (target === 'addActButton') {
+                        addActPopup();
+                    }
+                },
+                onRefresh: function () {
+                    this.remove("w2ui-reload");
+                }
+            },
+            recid: 'id',
+            columns: [
+                {field: 'id', caption: 'Id', size: '10%', sortable: true},
+                {field: 'type', caption: 'Type', size: '0%', hidden: true},
+                {field: 'parentId', caption: 'Parent Id', size: '10%', sortable: true},
+                {field: 'name', caption: 'Name', size: '35%', sortable: true},
+                {field: 'code', caption: 'Code', size: '35%', sortable: true},
+                {field: 'cost', caption: 'Cost', size: '10%', sortable: true}
+            ],
+            onReload: function (event) {
+                this.load('/get_wbs_list?id=' + document.URL.substr(document.URL.lastIndexOf('/') + 1));
+            },
+            onRefresh: function (event) {
+                var table = this;
+                var records = this.records;
+                records.forEach(function (record) {
+//                    console.log(record);
+                })
+            },
+            onClick: function (event) {
+//                w2alert(this.get(event.recid).name);
+            }
+        },
+        smet: {
+            name: 'smet',
+            show: {
+                selectColumn: true,
+                toolbar: true,
+                footer: true,
+                expandColumn: true
+            },
+            onExpand: function (event) {
+                jQuery('#' + event.box_id).css({
+                    margin: '0px',
+                    padding: '0px',
+                    width: '100%'
+                }).animate({height: '500px'}, 100);
+                if (this.get(event.recid).w2ui.children === undefined) {
+                    this.collapse(event.recid);
+                }
+            },
+            multiselect: true,
+            toolbar: {
+                items: [
+                    {type: 'break'}
+                ],
+                onClick: function (target, data) {
+//                    console.log(target);
+                },
+                onRefresh: function () {
+                    this.remove("w2ui-reload");
+                }
+            },
+            recid: 'id',
+            columns: [
+                {field: 'id', caption: 'Id', size: '4%', hidden: true, sortable: true},
+                {field: 'parentId', caption: 'Parent Id', hidden: true, sortable: true},
+                {field: 'type', caption: 'Type', size: '4%', hidden: true, sortable: true},
+                {field: 'name', caption: 'Name', size: '4%', sortable: true},
+                {field: 'num', caption: 'Num', size: '4%', sortable: true},
+                {field: 'isVirtual', caption: 'Is Virtual', hidden: true, sortable: true},
+                {field: 'comment', caption: 'Comment', hidden: true, sortable: true},
+                {field: 'status', caption: 'Status', hidden: true, sortable: true},
+                {field: 'dateCreated', caption: 'Date Created', hidden: true, sortable: true},
+                {field: 'dateChanged', caption: 'Date Changed', hidden: true, sortable: true},
+                {field: 'userCreated', caption: 'User Created', hidden: true, sortable: true},
+                {field: 'userChanged', caption: 'User Changed', hidden: true, sortable: true},
+                {field: 'region', caption: 'Region', hidden: true, sortable: true},
+                {field: 'code', caption: 'Code', hidden: true, sortable: true},
+                {field: 'units', caption: 'Units', size: '4%', sortable: true},
+                {field: 'quantity', caption: 'Quantity', size: '4%', sortable: true},
+                {field: 'oz', caption: 'Oz', size: '4%', sortable: true},
+                {field: 'em', caption: 'em', size: '4%', sortable: true},
+                {field: 'zm', caption: 'zm', size: '4%', sortable: true},
+                {field: 'mt', caption: 'mt', size: '4%', sortable: true},
+                {field: 'pz', caption: 'pz', size: '4%', sortable: true},
+                {field: 'nr', caption: 'nr', size: '4%', sortable: true},
+                {field: 'sp', caption: 'sp', size: '4%', sortable: true},
+                {field: 'sum', caption: 'sum', size: '4%', sortable: true},
+                {field: 'tzr', caption: 'tzr', size: '4%', sortable: true},
+                {field: 'tzm', caption: 'tzm', size: '4%', sortable: true},
+                {field: 'ozCost', caption: 'ozCost', size: '4%', sortable: true},
+                {field: 'emCost', caption: 'emCost', size: '4%', sortable: true},
+                {field: 'zmCost', caption: 'zmCost', size: '4%', sortable: true},
+                {field: 'mtCost', caption: 'mtCost', size: '4%', sortable: true},
+                {field: 'pzCost', caption: 'pzCost', size: '4%', sortable: true},
+                {field: 'nrCost', caption: 'nrCost', size: '4%', sortable: true},
+                {field: 'spCost', caption: 'spCost', size: '4%', sortable: true},
+                {field: 'tzrCost', caption: 'tzrCost', size: '4%', sortable: true},
+                {field: 'tzmCost', caption: 'tzmCost', size: '4%', sortable: true}
+
+            ],
+            onReload: function (event) {
+                this.load('/get_smet_by_project?id=' + document.URL.substr(document.URL.lastIndexOf('/') + 1));
+            }
+        },
+        wbsForm: {
+            name: 'addWbsForm',
+            style: 'border: 0px; background-color: transparent;',
+            formHTML: '<div role="form" class="w2ui-page page-0">' +
+            '    <div class="w2ui-field">' +
+            '        <label class="hidden">Id:</label>' +
+            '        <div class="hidden">' +
+            '           <input name="wbsId" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    <div class="w2ui-field">' +
+            '        <label>Название WBS:</label>' +
+            '        <div>' +
+            '           <input name="wbsName" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    </div>' +
+            '    <div class="w2ui-field">' +
+            '        <label>Код WBS:</label>' +
+            '        <div>' +
+            '            <input name="wbsCode" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    </div>' +
+            '</div>' +
+            '<div class="w2ui-buttons">' +
+            '    <button class="w2ui-btn" name="reset">Reset</button>' +
+            '    <button class="w2ui-btn" id="saveWbs" name="save">Save</button>' +
+            '</div>' +
+            '</div>',
+            fields: [
+                {field: 'wbsId', type: 'text', required: false},
+                {field: 'wbsName', type: 'text', required: true},
+                {field: 'wbsCode', type: 'text', required: true}
+            ],
+            actions: {
+                "save": function () {
+                    var addWbsForm = this;
+                    addWbsForm.validate();
+
+                    var wbs = {};
+                    wbs["projectId"] = document.URL.substr(document.URL.lastIndexOf('/') + 1);
+//                    wbs["projectId"] = 5;
+                    wbs["id"] = $("#wbsId").val();
+                    wbs["name"] = $("#wbsName").val();
+                    wbs["code"] = $("#wbsCode").val();
+                    $.ajax({
+                        type: "POST",
+                        contentType: "application/json",
+                        url: "/add_wbs",
+                        data: JSON.stringify(wbs),
+                        timeout: 600000,
+                        success: function (result) {
+                            addWbsForm.clear();
+                            w2popup.close();
+
+                            reloadWithPosition();
+                        },
+                        error: function (e) {
+
+                        }
+                    });
+                },
+                "reset": function () {
+                    this.clear();
+                }
+            }
+        },
+        wbsPopup: {
+            title: 'Add WBS',
+            body: '<div id="form" style="width: 100%; height: 100%;"></div>',
+            style: 'padding: 15px 0px 0px 0px',
+            width: 750,
+            height: 300,
+            showMax: true,
+            onToggle: function (event) {
+//                console.log(event);
+                $(w2ui.addWbsForm.box).hide();
+                event.onComplete = function () {
+                    $(w2ui.addWbsForm.box).show();
+                    w2ui.addWbsForm.resize();
+                }
+            },
+            onOpen: function (event) {
+//                console.log(event);
+                event.onComplete = function () {
+                    $('#w2ui-popup #form').w2render('addWbsForm');
+                }
+            }
+        },
+        actForm: {
+            name: 'actForm',
+            style: 'border: 0px; background-color: transparent;',
+            formHTML: //TODO align="center"
+            '<div role="form" class="w2ui-page page-0">' +
+            '    <div class="w2ui-field">' +
+            '        <label>Id:</label>' +
+            '        <div>' +
+            '           <input name="actId" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    </div>' +
+            '    <div class="w2ui-field">' +
+            '        <label>WBS Id:</label>' +
+            '        <div>' +
+            '           <input name="wbsId" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    </div>' +
+            '    <div class="w2ui-field">' +
+            '        <label>Название работы:</label>' +
+            '        <div>' +
+            '           <input name="actName" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    </div>' +
+            '    <div class="w2ui-field">' +
+            '        <label>Стоимость работы:</label>' +
+            '        <div>' +
+            '            <input name="actCost" type="text" maxlength="100" style="width: 250px"/>' +
+            '        </div>' +
+            '    </div>' +
+            '</div>' +
+            '<div class="w2ui-buttons">' +
+            '    <button class="w2ui-btn" name="reset">Reset</button>' +
+            '    <button class="w2ui-btn" id="saveWbs" name="save">Save</button>' +
+            '</div>',
+            fields: [
+                {field: 'actId', type: 'text', required: false, hidden: true},
+                {field: 'wbsId', type: 'text', required: true},
+                {field: 'actName', type: 'text', required: true},
+                {field: 'actCost', type: 'text', required: true, render: 'money'}
+            ],
+            actions: {
+                "save": function () {
+                    var actForm = this;
+                    actForm.validate();
+
+                    var act = {};
+//        wbs["projectId"] = document.URL.substr(document.URL.lastIndexOf('/') + 1);
+                    act["actId"] = $("#actId").val();
+                    act["wbsId"] = $("#wbsId").val();
+                    act["name"] = $("#actName").val();
+                    act["cost"] = $("#actCost").val();
+                    $.ajax({
+                        type: "POST",
+                        contentType: "application/json",
+                        url: "/add_act",
+                        data: JSON.stringify(act),
+                        timeout: 600000,
+                        success: function (result) {
+                            actForm.clear();
+                            w2popup.close();
+
+                            reloadWithPosition();
+                        },
+                        error: function (e) {
+
+                        }
+                    });
+                },
+                "reset": function () {
+                    this.clear();
+                }
+            }
+        },
+        actPopup: {
+            title: 'Add activity',
+            body: '<div id="actForm" style="width: 100%; height: 100%;"></div>',
+            style: 'padding: 15px 0px 0px 0px',
+            width: 750,
+            height: 300,
+            showMax: true,
+            onToggle: function (event) {
+                $(w2ui.actForm.box).hide();
+                event.onComplete = function () {
+                    $(w2ui.actForm.box).show();
+                    w2ui.actForm.resize();
+                }
+            },
+            onOpen: function (event) {
+                event.onComplete = function () {
+                    $('#w2ui-popup #actForm').w2render('actForm');
+                }
+            }
+        }
+    };
+
+    function addWbsPopup() {
+//        if (!w2ui.addWbsForm) {
+        $().w2form(config.wbsForm);
+        $().w2popup('open', config.wbsPopup);
+//        }
+    }
+
+    function editWbsPopup(grid) {
+        var sel = grid.getSelection();
+        var record = grid.get(sel[0]);
+
+        if (!w2ui.addWbsForm) {
+            $().w2form(config.wbsForm);
+        }
+
+        w2ui.addWbsForm.record.wbsId = record.id;
+        w2ui.addWbsForm.record.wbsName = record.name;
+        w2ui.addWbsForm.record.wbsCode = record.code;
+        $().w2popup('open', config.wbsPopup);
+    }
+
+    function addActPopup() {
+        $().w2form(config.actForm);
+        $().w2popup('open', config.actPopup);
+    }
+
+    function editActPopup(grid) {
+        var sel = grid.getSelection();
+        var record = grid.get(sel[0]);
+
+        if (!w2ui.actForm) {
+            $().w2form(config.actForm);
+        }
+
+        w2ui.actForm.record.actId = record.id.substr(1);
+        w2ui.actForm.record.wbsId = record.w2ui.parent_recid;
+        w2ui.actForm.record.actName = record.name;
+        w2ui.actForm.record.actCost = record.cost;
+        $().w2popup('open', config.actPopup);
+    }
+
+    function reloadWithPosition() {
+        var st = w2ui['grid'].last.scrollTop;
+        var expanded = $('.w2ui-expanded');
+        var expanded_ids = [];
+        for (var i = 0; i < expanded.length; i++) {
+            var id = expanded[i].outerText.split('\n')[0];
+            if (id !== "") {
+                expanded_ids.push(id);
+            }
+        }
+
+        w2ui['grid'].load('/get_wbs_list?id=' + document.URL.substr(document.URL.lastIndexOf('/') + 1), function () {
+            for (var idx in expanded_ids) {
+//                console.log(expanded_ids[idx]);
+                w2ui['grid'].expand(expanded_ids[idx]);
+            }
+            w2ui['grid'].last.scrollTop = st;
+
+            w2ui['grid'].refresh();
+        });
+    }
+
+    //TODO id wbs и activity могут пересекаться, из-за этого будут сворачивать и разворачиваться несколько строк
+    //TODO разница в количестве рекордс? неправильный джсон?
+    $(function () {
+        $.ajax({
+            url: '/get_wbs_list?id=' + document.URL.substr(document.URL.lastIndexOf('/') + 1),
+            method: 'GET',
+            success: function (result) {
+                config.activities.records = result;
+                $('#main').w2layout(config.layout);
+                w2ui.layout.content('left', $().w2layout(config.actLayout));
+                w2ui.actLayout.content('top', $().w2grid(config.activities));
+            }
+        });
+
+        $.ajax({
+            url: '/get_smet_by_project?id=' + document.URL.substr(document.URL.lastIndexOf('/') + 1),
+            method: 'GET',
+            success: function (result) {
+                config.smet.records = result;
+                w2ui.layout.content('right', $().w2grid(config.smet));
+            }
+        });
+    });
+
+    var addLinkConfig = {
+        grid: {
+            name: 'addLinkGrid',
+            show: {
+                toolbar: true,
+                toolbarSave: true
+            },
+            columns: [
+                {field: 'activityId', caption: '', size: '0%', hidden: true },
+                {field: 'smrId', caption: '', size: '0%', hidden: true },
+                {field: 'checkbox', caption: '?', size: '5%', editable: {type: 'checkbox'}},
+                {field: 'action', caption: 'Действие', tooltip: 'Действие', size: '10%'},
+                {field: 'id', caption: 'ID', tooltip: 'ID', size: '5%'},
+                {field: 'taskName', caption: 'Наименование работы', tooltip: 'Наименование работы', size: '20%'},
+                {field: 'number', caption: '№', tooltip: '№', size: '5%'},
+                {
+                    field: 'smetRowName',
+                    caption: 'Наименование сметной строки',
+                    tooltip: 'Наименование сметной строки',
+                    size: '20%'
+                },
+                {
+                    field: 'quantity',
+                    caption: 'Кол-во по сметной строке',
+                    tooltip: 'Кол-во по сметной строке',
+                    size: '5%'
+                },
+                {field: 'unit1', caption: 'Ед. изм.', tooltip: 'Ед. изм.', size: '5%'},
+                {field: 'koeff', caption: 'K', tooltip: 'K', size: '5%', editable: {type: 'text'}},
+                {field: 'generalKoeff', caption: 'K общ.', tooltip: 'K общ.', size: '5%', editable: {type: 'text'}},
+                {field: 'physVolume', caption: 'ФО', tooltip: 'ФО', size: '5%', editable: {type: 'checkbox'}},
+                {
+                    field: 'mainPhysVolume',
+                    caption: 'Основной физ. объем.',
+                    tooltip: 'Основной физ. объем.',
+                    size: '5%',
+                    editable: {type: 'text'}
+                },
+                {field: 'unit2', caption: 'Ед. изм.', tooltip: 'Ед. изм.', size: '5% '}
+            ],
+            recid: 'id',
+            onChange: function (event) {
+                console.log(event);
+            },
+            recordHeight: 70,
+            onClick: function (event) {
+                var grid = this;
+                event.onComplete = function () {
+                    var sel = grid.getSelection();
+                }
+            },
+            onReload: function (event) {
+//                this.load('/get_smet_by_project?id=' + document.URL.substr(document.URL.lastIndexOf('/') + 1)); TODO: заменить на links
+            },
+            onSave: function(event) {
+                console.log('saved');
+                console.log(w2ui.addLinkGrid.records);
+//                w2ui.addLinkGrid.records.forEach(function (record) {
+//                    $.post({
+//                        url: '',
+//                        data: record
+//                    })
+//                })
+            }
+        }
+    };
+
+    function openAddLinkPopup() {
+        if (w2ui.grid.getSelection().length > 0
+            && w2ui.smet.getSelection().length > 0
+            && w2ui.smet.get(w2ui.smet.getSelection()[0]).type === 'smr') {
+            w2popup.open({
+                title: 'Добавить или изменить связь',
+                width: 1200,
+                height: 600,
+                showMax: true,
+                body: '<div id="addLinkPopup" style="position: absolute; left: 5px; top: 5px; right: 5px; bottom: 5px;"></div>',
+                onOpen: function (event) {
+                    event.onComplete = function () {
+                        $.ajax({
+                            url: '/links/' + w2ui.grid.getSelection()[0].substr(1) + '/' + w2ui.smet.getSelection()[0].substr(1),
+                            method: 'GET',
+                            success: function (result) {
+                                var link = result;
+                                var activity = link.activity;
+                                var smr = link.smr;
+
+                                var newLink = {};
+                                newLink['activityId'] = activity.id;
+                                newLink['smrId'] = smr.id;
+                                newLink['checkbox'] = '';
+                                if (link.id === '') {
+                                    newLink['action'] = 'Добавление';
+                                } else {
+                                    newLink['action'] = 'Изменение';
+                                }
+                                newLink['id'] = activity['activityId'];
+                                newLink['taskName'] = activity['activityName'];
+                                newLink['number'] = smr['num'];
+                                newLink['smetRowName'] = smr['name'];
+                                newLink['quantity'] = smr['quantity'];
+                                newLink['unit1'] = smr['units'];
+                                newLink['koeff'] = link['factor'];
+                                newLink['generalKoeff'] = link['fullFactor'];
+                                newLink['isPhysVolume'] = 'TODO CHECKBOX';
+                                if (link.pvApply) {
+                                    newLink['physVolume'] = link['volume'];
+                                } else {
+                                    newLink['physVolume'] = '';
+                                }
+                                newLink['unit2'] = 'TODO UNITS FROM DB';
+                                if (addLinkConfig.grid.records === undefined) {
+                                    addLinkConfig.grid.records = [newLink]
+                                } else {
+                                    addLinkConfig.grid.records.push(newLink)
+                                }
+
+                                $('#addLinkPopup').w2grid(addLinkConfig.grid);
+                                w2ui.addLinkGrid.records.forEach(function (record) {
+                                    w2ui.addLinkGrid.select(record.id);
+                                    w2ui.addLinkGrid.delete(true);
+                                });
+                                w2ui.addLinkGrid.add(newLink);
+                            }
+                        });
+//                    $('#w2ui-popup #addLinkPopup').w2render('layout');
+//                    w2ui.layout.content('left', w2ui.grid);
+//                    w2ui.layout.content('main', w2ui.form);
+                    };
+                },
+                onClose: function (event) {
+                    event.onComplete = function () {
+                        w2ui.addLinkGrid.destroy();
+                    }
+                }
+            });
+        } else {
+            w2alert('Выберите сметную строку');
+        }
+    }
+
+    /*]]>*/
+</script>
+</html>
